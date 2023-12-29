@@ -12,6 +12,7 @@ dependencies {
     compile project(':language:cypher')
     compile project(':database:neo4j')
     compile project(':database:opencypher')
+    compile project(':database:nebula')
     annotationProcessor("org.apache.tinkerpop:gremlin-core:$tinkerpopVersion")
 
     compile project(':ui:visualization')

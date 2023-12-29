@@ -7,6 +7,7 @@ include 'database'
 include 'database:api'
 include 'database:neo4j'
 include 'database:opencypher'
+include 'database:nebula'
 
 // UI
 include 'ui'
@@ -28,4 +29,6 @@ include 'testing:database:neo4j-3.5'
 include 'testing:database:neo4j-4.0'
 include 'testing:integration-neo4j'
 include 'testing:integration-tinkerpop'
+include 'database:nebula'
+findProject(':database:nebula')?.name = 'nebula'
 

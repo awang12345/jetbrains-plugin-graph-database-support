@@ -30,6 +30,11 @@ public class DataSourceActionGroup extends ActionGroup {
                         new DataSourceAction("Open editor", "", null, dataSourceApi),
                         new CreateNodeAction("Create new node", dataSourceApi)
                 };
+            case NEBULA:
+                return new AnAction[]{
+                        new DataSourceAction("Open editor", "", null, dataSourceApi),
+                        new CreateNodeAction("Create new node", dataSourceApi)
+                };
             default:
                 throw new IllegalStateException("Unknown data source type encountered: " + dataSourceApi.getDataSourceType());
         }

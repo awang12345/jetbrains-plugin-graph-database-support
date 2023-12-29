@@ -5,6 +5,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesView;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.nebula.NebulaDataSourceDialog;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.neo4j.bolt.Neo4jBoltDataSourceDialog;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.tinkerpop.gremlin.OpenCypherGremlinDataSourceDialog;
 import icons.GraphIcons;
@@ -31,8 +32,12 @@ public class NewDataSourceActionGroup extends ActionGroup {
         NewDataSourceAction gremlinDataSource = new NewDataSourceAction(
                 dataSourcesView, new OpenCypherGremlinDataSourceDialog(project, dataSourcesView),
                 "openCypher - Gremlin", "Connect to Gremlin Data Source and " +
-            "translate Cypher to Gremlin", GraphIcons.Database.OPENCYPHER);
+                "translate Cypher to Gremlin", GraphIcons.Database.OPENCYPHER);
 
-        return new AnAction[]{neo4jBoltDataSource, gremlinDataSource};
+        NewDataSourceAction nebulaDataSource = new NewDataSourceAction(
+                dataSourcesView, new NebulaDataSourceDialog(project, dataSourcesView),
+                "Nebula-Graph", "Connect to Nebula-Graph Data Source", GraphIcons.Database.NEBULA);
+
+        return new AnAction[]{nebulaDataSource, neo4jBoltDataSource, gremlinDataSource};
     }
 }

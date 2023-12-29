@@ -10,6 +10,7 @@ import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.analytics.Analyti
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesView;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.nebula.NebulaDataSourceDialog;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.neo4j.bolt.Neo4jBoltDataSourceDialog;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.tinkerpop.gremlin.OpenCypherGremlinDataSourceDialog;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.Neo4jTreeNodeType;
@@ -99,6 +100,8 @@ public class DataSourceInteractions {
                     dialog = new Neo4jBoltDataSourceDialog(project, dataSourcesView, dataSourceToEdit);
                 } else if (dataSourceToEdit.getDataSourceType().equals(DataSourceType.OPENCYPHER_GREMLIN)) {
                     dialog = new OpenCypherGremlinDataSourceDialog(project, dataSourcesView, dataSourceToEdit);
+                } else if (dataSourceToEdit.getDataSourceType().equals(DataSourceType.NEBULA)) {
+                    dialog = new NebulaDataSourceDialog(project, dataSourcesView, dataSourceToEdit);
                 }
 
                 if (dialog != null) {

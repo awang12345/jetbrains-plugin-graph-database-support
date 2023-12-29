@@ -21,6 +21,8 @@ public interface DataSourceApi {
                 return DataSourceDescription.NEO4J_BOLT;
             case OPENCYPHER_GREMLIN:
                 return DataSourceDescription.OPENCYPHER_GREMLIN;
+            case NEBULA:
+                return DataSourceDescription.NEBULA_GRAPH;
             default:
                 throw new IllegalStateException("Unknown data source type encountered: " + getDataSourceType());
         }

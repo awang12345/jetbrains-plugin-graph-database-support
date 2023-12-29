@@ -17,6 +17,7 @@ import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerService;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.services.ExecutorService;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesView;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -92,6 +93,11 @@ public abstract class DataSourceDialog extends DialogWrapper {
         DataSourceApi dataSource = constructDataSource();
         DatabaseManagerService databaseManager = ServiceManager.getService(DatabaseManagerService.class);
         GraphDatabaseApi db = databaseManager.getDatabaseFor(dataSource);
+        return testQuery(db);
+    }
+
+    @NotNull
+    protected String testQuery(GraphDatabaseApi db) {
         GraphQueryResult result = db.execute("RETURN 'ok'");
 
         Object value = result.getRows().get(0).getValue(result.getColumns().get(0));

@@ -57,4 +57,26 @@ public interface DataSourceDescription {
             return "openCypher - Gremlin";
         }
     };
+
+    DataSourceDescription NEBULA_GRAPH = new DataSourceDescription() {
+        @Override
+        public DataSourceType getType() {
+            return DataSourceType.NEBULA;
+        }
+
+        @Override
+        public Icon getIcon() {
+            return GraphIcons.Database.NEBULA;
+        }
+
+        @Override
+        public String getDefaultFileExtension() {
+            return "ngql";
+        }
+
+        @Override
+        public String geTypeName() {
+            return "Nebula - NGql";
+        }
+    };
 }

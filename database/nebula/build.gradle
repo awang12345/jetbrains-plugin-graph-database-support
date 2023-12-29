@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':database:api')
+    compile "com.vesoft:client:$versionNebula"
+}
