@@ -13,6 +13,7 @@ public class CypherMetadataContainer {
     private final List<CypherPropertyKeyElement> propertyKeys;
     private final List<CypherProcedureElement> procedures;
     private final List<CypherUserFunctionElement> userFunctions;
+    private final List<NebulaLabelElement> nebulaLabelElements;
 
     public CypherMetadataContainer() {
         labels = new ArrayList<>();
@@ -20,6 +21,7 @@ public class CypherMetadataContainer {
         propertyKeys = new ArrayList<>();
         procedures = new ArrayList<>();
         userFunctions = new ArrayList<>();
+        nebulaLabelElements = new ArrayList<>();
     }
 
     public void addLabel(String label) {
@@ -42,8 +44,16 @@ public class CypherMetadataContainer {
         userFunctions.add(new CypherUserFunctionElement(userFunctionName, userFunctionSignature, userFunctionDescription));
     }
 
+    public void addNebulaLabel(String nebulaLabel) {
+        nebulaLabelElements.add(new NebulaLabelElement(nebulaLabel));
+    }
+
     public List<CypherLabelElement> getLabels() {
         return labels;
+    }
+
+    public List<NebulaLabelElement> getNebulaLabelElements() {
+        return nebulaLabelElements;
     }
 
     public List<CypherRelationshipTypeElement> getRelationshipTypes() {

@@ -6,6 +6,10 @@ import com.neueda.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
 import com.neueda.jetbrains.plugin.graphdb.database.api.data.GraphMetadata;
 import com.neueda.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
 import com.neueda.jetbrains.plugin.graphdb.database.api.query.GraphQueryResultColumn;
+import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaEdge;
+import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetadata;
+import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
+import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaTag;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerService;
@@ -23,8 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType.NEO4J_BOLT;
-import static com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType.OPENCYPHER_GREMLIN;
+import static com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType.*;
 import static java.util.stream.Collectors.toList;
 
 public class DataSourcesComponentMetadata implements ProjectComponent {
@@ -47,6 +50,7 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
 
         handlers.put(NEO4J_BOLT, this::getNeo4jBoltMetadata);
         handlers.put(OPENCYPHER_GREMLIN, this::getOpenCypherGremlinMetadata);
+        handlers.put(NEBULA, this::getNebulaMetadata);
     }
 
     public CompletableFuture<Optional<DataSourceMetadata>> getMetadata(DataSourceApi dataSource) {
@@ -60,7 +64,11 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
             executorService.runInBackground(
                     () -> handlers.get(sourceType).apply(dataSource),
                     (metadata) -> {
-                        updateNeo4jBoltMetadata(dataSource, (Neo4jBoltCypherDataSourceMetadata) metadata);
+                        if (sourceType != NEBULA) {
+                            updateNeo4jBoltMetadata(dataSource, (Neo4jBoltCypherDataSourceMetadata) metadata);
+                        } else {
+                            updateNebulaMetadata(dataSource, (NebulaDataSourceMetadata) metadata);
+                        }
                         metadataRetrieveEvent.metadataRefreshSucceed(dataSource, metadata);
                         future.complete(Optional.of(metadata));
                     },
@@ -142,6 +150,12 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
         return result;
     }
 
+    private DataSourceMetadata getNebulaMetadata(DataSourceApi dataSource) {
+        GraphDatabaseApi db = databaseManager.getDatabaseFor(dataSource);
+        GraphMetadata metadata = db.metadata();
+        return new NebulaDataSourceMetadata((NebulaGraphMetadata) metadata);
+    }
+
     private List<String> extractRelationshipTypes(GraphQueryResult relationshipQueryResult) {
         GraphQueryResultColumn column = relationshipQueryResult.getColumns().get(0);
         return relationshipQueryResult.getRows()
@@ -195,6 +209,41 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
         if (userFunctionMetadata != null) {
             userFunctionMetadata
                     .forEach(row -> container.addUserFunction(row.get("name"), row.get("signature"), row.get("description")));
+        }
+    }
+
+    private void updateNebulaMetadata(DataSourceApi dataSource, NebulaDataSourceMetadata metadata) {
+        // Refresh cypher metadata provider
+        cypherMetadataProviderService.wipeContainer(dataSource.getName());
+        CypherMetadataContainer container = cypherMetadataProviderService.getContainer(dataSource.getName());
+
+        List<NebulaSpace> nebulaSpaceList = metadata.getNebulaGraphMetadata().getNebulaSpaceList();
+        if (nebulaSpaceList == null || nebulaSpaceList.isEmpty()) {
+            return;
+        }
+
+        for (NebulaSpace nebulaSpace : nebulaSpaceList) {
+            container.addNebulaLabel(nebulaSpace.getSpaceName());
+            List<NebulaTag> tagList = nebulaSpace.getTagList();
+            if (tagList != null) {
+                tagList.forEach(tag -> {
+                    container.addNebulaLabel(tag.getTagName());
+                    Map<String, String> properties = tag.getProperties();
+                    if (properties != null) {
+                        properties.keySet().forEach(container::addNebulaLabel);
+                    }
+                });
+            }
+            List<NebulaEdge> edgeList = nebulaSpace.getEdgeList();
+            if (edgeList != null) {
+                edgeList.forEach(edge -> {
+                    container.addNebulaLabel(edge.getTagName());
+                    Map<String, String> properties = edge.getProperties();
+                    if (properties != null) {
+                        properties.keySet().forEach(container::addNebulaLabel);
+                    }
+                });
+            }
         }
     }
 

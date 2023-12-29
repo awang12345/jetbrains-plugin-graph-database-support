@@ -23,6 +23,8 @@ public interface CypherMetadataProviderService {
 
     List<CypherUserFunctionElement> getUserFunctions();
 
+    List<NebulaLabelElement> getNebulaLabels();
+
     Optional<CypherLabelElement> findLabel(String labelName);
 
     Optional<CypherRelationshipTypeElement> findRelationshipType(String relationshipTypeName);

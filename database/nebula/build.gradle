@@ -1,4 +1,6 @@
 dependencies {
     compile project(':database:api')
-    compile "com.vesoft:client:$versionNebula"
+    implementation("com.vesoft:client:$versionNebula") {
+        exclude group: 'org.slf4j'
+    }
 }

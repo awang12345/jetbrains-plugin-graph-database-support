@@ -40,7 +40,7 @@ public class NebulaGraphQueryResult implements GraphQueryResult {
 
     @Override
     public String getResultSummary() {
-        if (this.exception == null) {
+        if (this.exception != null) {
             StringWriter errorWrite = new StringWriter();
             this.exception.printStackTrace(new PrintWriter(errorWrite));
             return "Execute error:" + errorWrite;

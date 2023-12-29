@@ -1,8 +1,6 @@
 package com.neueda.jetbrains.plugin.graphdb.database.nebula;
 
-import com.alibaba.fastjson.util.AntiCollisionHashMap;
 import com.neueda.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
-import com.neueda.jetbrains.plugin.graphdb.database.api.data.GraphMetadata;
 import com.neueda.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaEdge;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetadata;
@@ -13,12 +11,7 @@ import com.vesoft.nebula.client.graph.SessionPool;
 import com.vesoft.nebula.client.graph.SessionPoolConfig;
 import com.vesoft.nebula.client.graph.data.HostAddress;
 import com.vesoft.nebula.client.graph.data.ResultSet;
-import com.vesoft.nebula.client.graph.exception.AuthFailedException;
-import com.vesoft.nebula.client.graph.exception.BindSpaceFailedException;
-import com.vesoft.nebula.client.graph.exception.ClientServerIncompatibleException;
-import com.vesoft.nebula.client.graph.exception.IOErrorException;
 
-import java.net.ConnectException;
 import java.util.*;
 import java.util.function.Function;
 
@@ -69,7 +62,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
         sessionPoolConfig.setIntervalTime(1000);
         SessionPool sessionPool = new SessionPool(sessionPoolConfig);
         if (!sessionPool.init()) {
-            throw new RuntimeException("Nebula session init fail!!");
+            throw new RuntimeException("Nebula session init fail!!addresses=" + addresses);
         }
         try {
             return executor.apply(sessionPool);

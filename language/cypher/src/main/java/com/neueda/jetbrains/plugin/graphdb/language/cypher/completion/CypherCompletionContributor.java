@@ -37,5 +37,9 @@ public class CypherCompletionContributor extends CompletionContributor {
         extend(CompletionType.BASIC,
                 UserFunctionsCompletionProvider.PATTERN,
                 new UserFunctionsCompletionProvider());
+
+        extend(CompletionType.BASIC,
+                NebulaCompletionProvider.PATTERN,
+                new NebulaCompletionProvider());
     }
 }

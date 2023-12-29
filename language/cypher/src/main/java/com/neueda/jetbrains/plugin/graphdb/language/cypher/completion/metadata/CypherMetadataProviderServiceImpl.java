@@ -70,6 +70,13 @@ public class CypherMetadataProviderServiceImpl implements CypherMetadataProvider
     }
 
     @Override
+    public List<NebulaLabelElement> getNebulaLabels() {
+        return sourceData.values().stream()
+                .flatMap((container) -> container.getNebulaLabelElements().stream())
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<CypherLabelElement> findLabel(String labelName) {
         return sourceData.values().stream()
                 .flatMap((container) -> container.getLabels().stream())
