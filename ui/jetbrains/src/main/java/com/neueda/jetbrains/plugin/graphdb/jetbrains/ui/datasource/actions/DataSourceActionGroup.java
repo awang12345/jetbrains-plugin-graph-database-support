@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
+import icons.GraphIcons;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,8 +33,7 @@ public class DataSourceActionGroup extends ActionGroup {
                 };
             case NEBULA:
                 return new AnAction[]{
-                        new DataSourceAction("Open editor", "", null, dataSourceApi),
-                        new CreateNodeAction("Create new node", dataSourceApi)
+                        new DataSourceAction("Open nGQL console", "Open nGQL editor", GraphIcons.Nodes.NEBULA_CONSOLE, dataSourceApi)
                 };
             default:
                 throw new IllegalStateException("Unknown data source type encountered: " + dataSourceApi.getDataSourceType());

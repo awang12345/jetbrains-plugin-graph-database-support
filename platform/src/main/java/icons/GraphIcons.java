@@ -36,6 +36,7 @@ public final class GraphIcons {
         public static final Icon NEBULA_TAG = getIcon("/graphdb/icons/nodes/tag.svg");
         public static final Icon NEBULA_EDGE = getIcon("/graphdb/icons/nodes/edge.svg");
         public static final Icon NEBULA_FIELD = getIcon("/graphdb/icons/nodes/field.svg");
+        public static final Icon NEBULA_CONSOLE = getIcon("/graphdb/icons/nodes/console.svg");
     }
 
     private GraphIcons() {

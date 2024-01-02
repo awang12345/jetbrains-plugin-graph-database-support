@@ -71,7 +71,7 @@ public interface DataSourceDescription {
 
         @Override
         public String getDefaultFileExtension() {
-            return "ngql";
+            return "cypher";
         }
 
         @Override

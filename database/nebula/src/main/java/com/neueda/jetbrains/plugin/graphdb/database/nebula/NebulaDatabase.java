@@ -17,10 +17,10 @@ import java.util.function.Function;
 
 public class NebulaDatabase implements GraphDatabaseApi {
 
-    private NebulaConfiguration configuration;
+    private SessionPool sessionPool;
 
     public NebulaDatabase(Map<String, String> config) {
-        this.configuration = new NebulaConfiguration(config);
+        this.sessionPool = initSessionPool(config);
     }
 
     @Override
@@ -41,28 +41,31 @@ public class NebulaDatabase implements GraphDatabaseApi {
                 }
                 return new NebulaGraphQueryResult(startTime, resultSet, null);
             } catch (Exception e) {
-                return new NebulaGraphQueryResult(startTime, null, e);
+                throw new RuntimeException(e);
             }
         });
     }
 
     private <T> T executeInSession(Function<SessionPool, T> executor) {
+        return executor.apply(sessionPool);
+    }
+
+    private SessionPool initSessionPool(Map<String, String> config) {
+        NebulaConfiguration configuration = new NebulaConfiguration(config);
         List<HostAddress> addresses = Arrays.asList(new HostAddress(configuration.getHost(), configuration.getPort()));
         String spaceName = configuration.getDefaultSpace();
         String user = configuration.getUser();
         String password = configuration.getPassword();
         SessionPoolConfig sessionPoolConfig = new SessionPoolConfig(addresses, spaceName, user, password);
+        sessionPoolConfig.setMinSessionSize(1);
+        sessionPoolConfig.setMaxSessionSize(1);
         sessionPoolConfig.setRetryTimes(3);
         sessionPoolConfig.setIntervalTime(1000);
         SessionPool sessionPool = new SessionPool(sessionPoolConfig);
         if (!sessionPool.init()) {
             throw new RuntimeException("Nebula session init fail!!addresses=" + addresses);
         }
-        try {
-            return executor.apply(sessionPool);
-        } finally {
-            sessionPool.close();
-        }
+        return sessionPool;
     }
 
     @Override
