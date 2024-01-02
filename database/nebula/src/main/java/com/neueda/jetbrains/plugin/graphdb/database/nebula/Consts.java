@@ -1,11 +1,6 @@
 package com.neueda.jetbrains.plugin.graphdb.database.nebula;
 
-/**
- * 业务说明：
- *
- * @Author jiangyiwang-jk
- * @Date 2023/12/29 16:49
- */
+
 public interface Consts {
 
     interface Stetments {

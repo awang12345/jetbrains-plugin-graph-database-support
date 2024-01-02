@@ -7,19 +7,16 @@ import com.neueda.jetbrains.plugin.graphdb.database.api.query.GraphQueryResultRo
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphRelationship;
 import com.vesoft.nebula.Row;
 import com.vesoft.nebula.Value;
+import com.vesoft.nebula.client.graph.data.DateWrapper;
 import com.vesoft.nebula.client.graph.data.ResultSet;
 import com.vesoft.nebula.client.graph.data.ValueWrapper;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * 业务说明：
- *
- * @Author jiangyiwang-jk
- * @Date 2023/12/29 14:23
- */
+
 public class NebulaGraphQueryResultRow implements GraphQueryResultRow {
 
     private ResultSet.Record record;
@@ -30,8 +27,18 @@ public class NebulaGraphQueryResultRow implements GraphQueryResultRow {
 
     @Override
     public Object getValue(GraphQueryResultColumn column) {
-        Object fieldValue = this.record.get(column.getName()).getValue().getFieldValue();
-        return fieldValue;
+        try {
+            ValueWrapper wrapper = this.record.get(column.getName());
+            if (wrapper.isString()) {
+                return wrapper.asString();
+            }
+            if (wrapper.isNull()) {
+                return "NULL";
+            }
+            return String.valueOf(wrapper.getValue().getFieldValue());
+        } catch (Exception ex) {
+            return "Parse error:" + ex.getMessage();
+        }
     }
 
     @Override

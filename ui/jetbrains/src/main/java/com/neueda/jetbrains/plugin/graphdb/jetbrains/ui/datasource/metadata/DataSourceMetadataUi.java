@@ -213,7 +213,7 @@ public class DataSourceMetadataUi {
         for (NebulaSpace nebulaSpace : nebulaGraphMetadata.getNebulaSpaceList()) {
             PatchedDefaultMutableTreeNode spaceTreeNode = new PatchedDefaultMutableTreeNode(
                     new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.SPACE, dataSourceApi,
-                            String.format("Space:(%s)", nebulaSpace.getSpaceName()), GraphIcons.Nodes.CONSTRAINT));
+                            nebulaSpace.getSpaceName(), GraphIcons.Nodes.NEBULA_SPACE));
             addEdgeNode(dataSourceApi, nebulaSpace, spaceTreeNode);
             addTagNode(dataSourceApi, nebulaSpace, spaceTreeNode);
             dataSourceRootTreeNode.add(spaceTreeNode);
@@ -224,11 +224,11 @@ public class DataSourceMetadataUi {
         if (nebulaSpace.getEdgeList() != null && !nebulaSpace.getEdgeList().isEmpty()) {
             for (NebulaEdge nebulaEdge : nebulaSpace.getEdgeList()) {
                 PatchedDefaultMutableTreeNode edgeTreeNode
-                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.EDGE, dataSourceApi, nebulaEdge.getTagName()));
+                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.EDGE, dataSourceApi, nebulaEdge.getTagName(), GraphIcons.Nodes.NEBULA_EDGE));
                 if (nebulaEdge.getProperties() != null && !nebulaEdge.getProperties().isEmpty()) {
                     for (Map.Entry<String, String> entry : nebulaEdge.getProperties().entrySet()) {
                         PatchedDefaultMutableTreeNode propTreeNode = new PatchedDefaultMutableTreeNode(
-                                new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.PROP, dataSourceApi, String.format("%s (%s)", entry.getKey(), entry.getValue())));
+                                new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.PROP, dataSourceApi, String.format("%s (%s)", entry.getKey(), entry.getValue(), GraphIcons.Nodes.NEBULA_FIELD)));
                         edgeTreeNode.add(propTreeNode);
                     }
                 }
@@ -241,11 +241,11 @@ public class DataSourceMetadataUi {
         if (nebulaSpace.getTagList() != null && !nebulaSpace.getTagList().isEmpty()) {
             for (NebulaTag nebulaTag : nebulaSpace.getTagList()) {
                 PatchedDefaultMutableTreeNode tagTreeNode
-                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.TAG, dataSourceApi, nebulaTag.getTagName()));
+                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.TAG, dataSourceApi, nebulaTag.getTagName(), GraphIcons.Nodes.NEBULA_TAG));
                 if (nebulaTag.getProperties() != null && !nebulaTag.getProperties().isEmpty()) {
                     for (Map.Entry<String, String> entry : nebulaTag.getProperties().entrySet()) {
                         PatchedDefaultMutableTreeNode propTreeNode = new PatchedDefaultMutableTreeNode(
-                                new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.PROP, dataSourceApi, String.format("%s (%s)", entry.getKey(), entry.getValue())));
+                                new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.PROP, dataSourceApi, String.format("%s (%s)", entry.getKey(), entry.getValue(), GraphIcons.Nodes.NEBULA_FIELD)));
                         tagTreeNode.add(propTreeNode);
                     }
                 }

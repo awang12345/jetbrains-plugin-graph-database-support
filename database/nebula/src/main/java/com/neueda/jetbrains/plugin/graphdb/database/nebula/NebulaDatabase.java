@@ -2,12 +2,12 @@ package com.neueda.jetbrains.plugin.graphdb.database.nebula;
 
 import com.neueda.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
 import com.neueda.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
+import com.neueda.jetbrains.plugin.graphdb.database.nebula.client.SessionPool;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaEdge;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetadata;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaTag;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.query.NebulaGraphQueryResult;
-import com.vesoft.nebula.client.graph.SessionPool;
 import com.vesoft.nebula.client.graph.SessionPoolConfig;
 import com.vesoft.nebula.client.graph.data.HostAddress;
 import com.vesoft.nebula.client.graph.data.ResultSet;
@@ -15,12 +15,6 @@ import com.vesoft.nebula.client.graph.data.ResultSet;
 import java.util.*;
 import java.util.function.Function;
 
-/**
- * 业务说明：
- *
- * @Author jiangyiwang-jk
- * @Date 2023/12/29 11:34
- */
 public class NebulaDatabase implements GraphDatabaseApi {
 
     private NebulaConfiguration configuration;

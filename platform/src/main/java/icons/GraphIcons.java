@@ -32,6 +32,10 @@ public final class GraphIcons {
         public static final Icon FUNCTION = AllIcons.Nodes.Function;
         public static final Icon STORED_PROCEDURE = AllIcons.Nodes.Function;
         public static final Icon USER_FUNCTION = AllIcons.Nodes.Function;
+        public static final Icon NEBULA_SPACE = getIcon("/graphdb/icons/nodes/space.svg");
+        public static final Icon NEBULA_TAG = getIcon("/graphdb/icons/nodes/tag.svg");
+        public static final Icon NEBULA_EDGE = getIcon("/graphdb/icons/nodes/edge.svg");
+        public static final Icon NEBULA_FIELD = getIcon("/graphdb/icons/nodes/field.svg");
     }
 
     private GraphIcons() {
