@@ -96,7 +96,7 @@ public class SessionPool implements Serializable {
         }
 
         // if session size is equal to max size and no idle session here, throw exception
-        throw new RuntimeException("no extra session available");
+        throw new RuntimeException("no extra session available for :"+ getAddress());
     }
 
 

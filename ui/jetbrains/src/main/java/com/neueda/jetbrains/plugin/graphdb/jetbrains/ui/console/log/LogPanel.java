@@ -13,12 +13,15 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.ui.JBUI;
 import com.neueda.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
+import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetadata;
 import com.neueda.jetbrains.plugin.graphdb.database.opencypher.gremlin.exceptions.ExceptionErrorMessages;
 import com.neueda.jetbrains.plugin.graphdb.database.opencypher.gremlin.exceptions.OpenCypherGremlinException;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryPayload;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourceMetadata;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.context.DataContext;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.GraphConsoleView;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.CommonConsoleLogEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryExecutionProcessEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryParametersRetrievalErrorEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.MetadataRetrieveEvent;
@@ -111,6 +114,7 @@ public class LogPanel implements Disposable {
 
             @Override
             public void metadataRefreshSucceed(DataSourceApi nodeDataSource, DataSourceMetadata metadata) {
+                DataContext.getInstance(project).addMetadata(nodeDataSource, metadata);
                 info(String.format("DataSource[%s] - metadata refreshed successfully!", nodeDataSource.getName()));
                 newLine();
                 newLine();
@@ -129,6 +133,30 @@ public class LogPanel implements Disposable {
                 (exception, editor) -> {
                     error(String.format("%s ", PARAMS_ERROR_COMMON_MSG));
                     printException(exception);
+                });
+
+
+        messageBus.connect().subscribe(CommonConsoleLogEvent.COMMON_LOG_EVENT_TOPIC,
+                new CommonConsoleLogEvent() {
+                    @Override
+                    public void info(String msg) {
+                        log.print(msg, ConsoleViewContentType.NORMAL_OUTPUT);
+                        newLine();
+                    }
+
+                    @Override
+                    public void warn(String msg) {
+                        log.print(msg, ConsoleViewContentType.LOG_WARNING_OUTPUT);
+                        newLine();
+                    }
+
+                    @Override
+                    public void error(String msg, Exception exception) {
+                        log.print(msg, ConsoleViewContentType.LOG_ERROR_OUTPUT);
+                        newLine();
+                        printException(exception);
+                        newLine();
+                    }
                 });
     }
 

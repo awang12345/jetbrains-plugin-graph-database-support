@@ -180,6 +180,8 @@
         <lang.formatter language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.formatter.CypherFormattingModelBuilder"/>
         <preFormatProcessor implementation="com.neueda.jetbrains.plugin.graphdb.language.cypher.formatter.CypherPreFormatter" />
         <codeInsight.lineMarkerProvider language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.component.linemarker.CypherLineMarkerProvider"/>
+
+        <projectService serviceImplementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.context.DataContext" serviceInterface="com.neueda.jetbrains.plugin.graphdb.jetbrains.context.DataContext"/>
     </extensions>
 
     <actions>
@@ -250,5 +252,26 @@
             </action>
             <add-to-group group-id="ProjectViewPopupMenu"/>
         </group>
+
+        <!--SQL编辑器相关-->
+        <group id="NebulaGraph.ActionGroup.SQLFileEditor" text="File Editor Controls">
+            <action id="NebulaGraph.Actions.CurrentSchema"
+                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.SQLConsoleSpaceSelectAction"
+                    text="--Space--">
+            </action>
+
+            <action id="NebulaGraph.Actions.SQLExecute"
+                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.ExecuteConsoleEditorSQLAction"
+                    text="Execute select nGQL" icon="/graphdb/icons/nodes/StatementExecution.png">
+                <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            </action>
+
+        </group>
     </actions>
+
+    <projectListeners>
+        <!--SQL编辑器开启监听-->
+        <listener topic="com.intellij.openapi.fileEditor.FileEditorManagerListener" class="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.listeners.NebulaConsoleEditorFileListener"/>
+    </projectListeners>
+
 </idea-plugin>

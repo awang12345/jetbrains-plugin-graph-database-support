@@ -58,9 +58,10 @@ public class NebulaDatabase implements GraphDatabaseApi {
         String password = configuration.getPassword();
         SessionPoolConfig sessionPoolConfig = new SessionPoolConfig(addresses, spaceName, user, password);
         sessionPoolConfig.setMinSessionSize(1);
-        sessionPoolConfig.setMaxSessionSize(1);
+        sessionPoolConfig.setMaxSessionSize(10);
         sessionPoolConfig.setRetryTimes(3);
         sessionPoolConfig.setIntervalTime(1000);
+        sessionPoolConfig.setWaitTime(10_000);
         SessionPool sessionPool = new SessionPool(sessionPoolConfig);
         if (!sessionPool.init()) {
             throw new RuntimeException("Nebula session init fail!!addresses=" + addresses);
