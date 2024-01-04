@@ -15,6 +15,7 @@ import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.*;
 import icons.GraphIcons;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import javax.swing.tree.MutableTreeNode;
 import java.util.HashMap;
 import java.util.List;
@@ -213,7 +214,7 @@ public class DataSourceMetadataUi {
         for (NebulaSpace nebulaSpace : nebulaGraphMetadata.getNebulaSpaceList()) {
             PatchedDefaultMutableTreeNode spaceTreeNode = new PatchedDefaultMutableTreeNode(
                     new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.SPACE, dataSourceApi,
-                            nebulaSpace.getSpaceName(), GraphIcons.Nodes.NEBULA_SPACE));
+                            nebulaSpace.getSpaceName(), GraphIcons.Nodes.NEBULA_SPACE, nebulaSpace));
             addEdgeNode(dataSourceApi, nebulaSpace, spaceTreeNode);
             addTagNode(dataSourceApi, nebulaSpace, spaceTreeNode);
             dataSourceRootTreeNode.add(spaceTreeNode);
@@ -224,11 +225,13 @@ public class DataSourceMetadataUi {
         if (nebulaSpace.getEdgeList() != null && !nebulaSpace.getEdgeList().isEmpty()) {
             for (NebulaEdge nebulaEdge : nebulaSpace.getEdgeList()) {
                 PatchedDefaultMutableTreeNode edgeTreeNode
-                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.EDGE, dataSourceApi, nebulaEdge.getTagName(), GraphIcons.Nodes.NEBULA_EDGE));
+                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.EDGE, dataSourceApi,
+                        nebulaEdge.getTagName(), GraphIcons.Nodes.NEBULA_EDGE, nebulaEdge));
                 if (nebulaEdge.getProperties() != null && !nebulaEdge.getProperties().isEmpty()) {
                     for (Map.Entry<String, String> entry : nebulaEdge.getProperties().entrySet()) {
                         PatchedDefaultMutableTreeNode propTreeNode = new PatchedDefaultMutableTreeNode(
-                                new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.PROP, dataSourceApi, String.format("%s (%s)", entry.getKey(), entry.getValue()), GraphIcons.Nodes.NEBULA_FIELD));
+                                new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.PROP, dataSourceApi, String.format("%s (%s)", entry.getKey(), entry.getValue()),
+                                        getNebulaPropertyIcon(entry.getValue())));
                         edgeTreeNode.add(propTreeNode);
                     }
                 }
@@ -241,16 +244,43 @@ public class DataSourceMetadataUi {
         if (nebulaSpace.getTagList() != null && !nebulaSpace.getTagList().isEmpty()) {
             for (NebulaTag nebulaTag : nebulaSpace.getTagList()) {
                 PatchedDefaultMutableTreeNode tagTreeNode
-                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.TAG, dataSourceApi, nebulaTag.getTagName(), GraphIcons.Nodes.NEBULA_TAG));
+                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.TAG, dataSourceApi,
+                        nebulaTag.getTagName(), GraphIcons.Nodes.NEBULA_TAG, nebulaTag));
                 if (nebulaTag.getProperties() != null && !nebulaTag.getProperties().isEmpty()) {
                     for (Map.Entry<String, String> entry : nebulaTag.getProperties().entrySet()) {
                         PatchedDefaultMutableTreeNode propTreeNode = new PatchedDefaultMutableTreeNode(
-                                new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.PROP, dataSourceApi, String.format("%s (%s)", entry.getKey(), entry.getValue()), GraphIcons.Nodes.NEBULA_FIELD));
+                                new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.PROP, dataSourceApi,
+                                        String.format("%s (%s)", entry.getKey(), entry.getValue()), getNebulaPropertyIcon(entry.getValue())));
                         tagTreeNode.add(propTreeNode);
                     }
                 }
                 spaceTreeNode.add(tagTreeNode);
             }
+        }
+    }
+
+    private static Icon getNebulaPropertyIcon(String propertyType) {
+        switch (propertyType.toLowerCase()) {
+            case "int8":
+            case "int16":
+            case "int32":
+            case "int64":
+            case "float":
+            case "double":
+                return GraphIcons.Nodes.NEBULA_FIELD_NUM;
+            case "bool":
+                return GraphIcons.Nodes.NEBULA_FIELD_BOOLEAN;
+            case "date":
+            case "time":
+            case "datetime":
+            case "timestamp":
+            case "duration":
+                return GraphIcons.Nodes.NEBULA_FIELD_TIME;
+            case "string":
+            case "fixed_string":
+                return GraphIcons.Nodes.NEBULA_FIELD_STR;
+            default:
+                return GraphIcons.Nodes.NEBULA_FIELD;
         }
     }
 

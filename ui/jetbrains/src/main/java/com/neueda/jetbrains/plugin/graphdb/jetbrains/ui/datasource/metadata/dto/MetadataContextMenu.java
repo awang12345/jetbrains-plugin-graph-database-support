@@ -7,11 +7,20 @@ import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.actions.MetadataActionGroup;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.NodeType;
 
-public class MetadataContextMenu implements ContextMenu     {
+public class MetadataContextMenu implements ContextMenu {
 
     private NodeType metadataType;
     private DataSourceApi dataSourceApi;
     private String data;
+
+    private Object extData;
+
+    public MetadataContextMenu(NodeType metadataType, DataSourceApi dataSourceApi, String data, Object extData) {
+        this.metadataType = metadataType;
+        this.dataSourceApi = dataSourceApi;
+        this.data = data;
+        this.extData = extData;
+    }
 
     public MetadataContextMenu(NodeType metadataType, DataSourceApi dataSourceApi, String data) {
         this.metadataType = metadataType;
@@ -23,12 +32,11 @@ public class MetadataContextMenu implements ContextMenu     {
     public void showPopup(DataContext dataContext) {
         ListPopup popup = JBPopupFactory.getInstance().createActionGroupPopup(
                 data,
-                new MetadataActionGroup(metadataType, data, dataSourceApi.getUUID()),
+                new MetadataActionGroup(metadataType, data, dataSourceApi.getUUID(), extData),
                 dataContext,
-                JBPopupFactory.ActionSelectionAid.SPEEDSEARCH,
+                JBPopupFactory.ActionSelectionAid.MNEMONICS,
                 true
         );
-
         popup.showInBestPositionFor(dataContext);
     }
 

@@ -2,7 +2,6 @@ package com.neueda.jetbrains.plugin.graphdb.language.ngql;
 
 import com.intellij.lang.Language;
 import com.neueda.jetbrains.plugin.graphdb.platform.SupportedLanguage;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 业务说明：

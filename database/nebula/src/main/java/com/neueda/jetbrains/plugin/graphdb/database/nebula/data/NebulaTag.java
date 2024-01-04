@@ -14,9 +14,12 @@ public class NebulaTag {
 
     private Map<String, String> properties;
 
-    public NebulaTag(String tagName, Map<String, String> properties) {
+    private String ddl;
+
+    public NebulaTag(String tagName, Map<String, String> properties, String ddl) {
         this.tagName = tagName;
         this.properties = properties;
+        this.ddl = ddl;
     }
 
     public String getTagName() {
@@ -25,5 +28,9 @@ public class NebulaTag {
 
     public Map<String, String> getProperties() {
         return properties;
+    }
+
+    public String getDdl() {
+        return this.ddl;
     }
 }

@@ -11,6 +11,10 @@ public interface Consts {
         String DESC_TAG = "DESCRIBE TAG %s";
         String DESC_EDGE = "DESCRIBE EDGE %s";
 
+        String SHOW_CREATE_EDGE = "SHOW CREATE EDGE %s";
+        String SHOW_CREATE_TAG = "SHOW CREATE TAG %s";
+        String SHOW_CREATE_SPACE = "SHOW CREATE SPACE %s";
+
     }
 
 }

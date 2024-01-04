@@ -16,10 +16,13 @@ public class NebulaSpace {
     private List<NebulaEdge> edgeList;
     private List<NebulaTag> tagList;
 
-    public NebulaSpace(String spaceName, List<NebulaEdge> edgeList, List<NebulaTag> tagList) {
+    private String ddl;
+
+    public NebulaSpace(String spaceName, List<NebulaEdge> edgeList, List<NebulaTag> tagList,String ddl) {
         this.spaceName = spaceName;
         this.edgeList = edgeList;
         this.tagList = tagList;
+        this.ddl = ddl;
     }
 
     public String getSpaceName() {
@@ -52,5 +55,9 @@ public class NebulaSpace {
 
     public void setTagList(List<NebulaTag> tagList) {
         this.tagList = tagList;
+    }
+
+    public String getDdl() {
+        return ddl;
     }
 }

@@ -11,6 +11,10 @@ import com.neueda.jetbrains.plugin.graphdb.database.nebula.query.NebulaGraphQuer
 import com.vesoft.nebula.client.graph.SessionPoolConfig;
 import com.vesoft.nebula.client.graph.data.HostAddress;
 import com.vesoft.nebula.client.graph.data.ResultSet;
+import com.vesoft.nebula.client.graph.exception.AuthFailedException;
+import com.vesoft.nebula.client.graph.exception.BindSpaceFailedException;
+import com.vesoft.nebula.client.graph.exception.ClientServerIncompatibleException;
+import com.vesoft.nebula.client.graph.exception.IOErrorException;
 
 import java.util.*;
 import java.util.function.Function;
@@ -96,7 +100,9 @@ public class NebulaDatabase implements GraphDatabaseApi {
             List<NebulaEdge> edgeList = querySpaceEdgeList(sessionPool);
             List<NebulaTag> tagList = querySpaceTagList(sessionPool);
 
-            spaces.add(new NebulaSpace(spaceName, edgeList, tagList));
+            String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_SPACE, spaceName));
+
+            spaces.add(new NebulaSpace(spaceName, edgeList, tagList, ddl));
 
         }
         return spaces;
@@ -110,7 +116,10 @@ public class NebulaDatabase implements GraphDatabaseApi {
             ResultSet.Record valueWrappers = resultSet.rowValues(i);
             String edgeName = valueWrappers.get(0).asString();
             Map<String, String> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_EDGE, edgeName));
-            edgeList.add(new NebulaEdge(edgeName, prop));
+
+            String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_EDGE, edgeName));
+
+            edgeList.add(new NebulaEdge(edgeName, prop, ddl));
         }
         return edgeList;
     }
@@ -121,9 +130,12 @@ public class NebulaDatabase implements GraphDatabaseApi {
         List<NebulaTag> tagList = new ArrayList<>();
         for (int i = 0; i < resultSet.rowsSize(); i++) {
             ResultSet.Record valueWrappers = resultSet.rowValues(i);
-            String edgeName = valueWrappers.get(0).asString();
-            Map<String, String> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_TAG, edgeName));
-            tagList.add(new NebulaTag(edgeName, prop));
+            String tagName = valueWrappers.get(0).asString();
+            Map<String, String> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_TAG, tagName));
+
+            String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_TAG, tagName));
+
+            tagList.add(new NebulaTag(tagName, prop, ddl));
         }
         return tagList;
     }
@@ -138,6 +150,12 @@ public class NebulaDatabase implements GraphDatabaseApi {
             prop.put(fieldName, type);
         }
         return prop;
+    }
+
+    private String getDDL(SessionPool sessionPool, String sql) throws Exception {
+        ResultSet resultSet = sessionPool.execute(sql);
+        ResultSet.Record valueWrappers = resultSet.rowValues(0);
+        return valueWrappers.get(1).asString();
     }
 
 }

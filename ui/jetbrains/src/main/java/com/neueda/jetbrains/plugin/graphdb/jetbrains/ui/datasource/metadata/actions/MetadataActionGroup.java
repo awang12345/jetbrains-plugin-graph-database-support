@@ -3,10 +3,12 @@ package com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.act
 import com.intellij.openapi.actionSystem.ActionGroup;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.NebulaTreeNodeType;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.Neo4jTreeNodeType;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.NodeType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import sourcecode.Impls;
 
 import static icons.GraphIcons.Database.NEO4J;
 
@@ -16,10 +18,13 @@ public class MetadataActionGroup extends ActionGroup {
     private final String data;
     private final String dataSourceUuid;
 
-    public MetadataActionGroup(NodeType type, String data, String dataSourceUuid) {
+    private final Object extData;
+
+    public MetadataActionGroup(NodeType type, String data, String dataSourceUuid, Object extData) {
         this.type = type;
         this.data = data;
         this.dataSourceUuid = dataSourceUuid;
+        this.extData = extData;
     }
 
     @NotNull
@@ -35,6 +40,12 @@ public class MetadataActionGroup extends ActionGroup {
             };
         } else if (type == Neo4jTreeNodeType.PROPERTY_KEY) {
             return new AnAction[]{new MetadataPropertyKeyAction(data, dataSourceUuid, "Query this property", "", NEO4J)};
+        } else if (type == NebulaTreeNodeType.SPACE) {
+            return new AnAction[]{new ShowNebulaDDLAction(extData)};
+        } else if (type == NebulaTreeNodeType.EDGE) {
+            return new AnAction[]{new ShowNebulaDDLAction(extData)};
+        } else if (type == NebulaTreeNodeType.TAG) {
+            return new AnAction[]{new ShowNebulaDDLAction(extData)};
         } else {
             return new AnAction[]{};
         }

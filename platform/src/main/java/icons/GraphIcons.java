@@ -1,12 +1,13 @@
 package icons;
 
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.util.ScalableIcon;
 
 import javax.swing.Icon;
 
 import static com.intellij.openapi.util.IconLoader.getIcon;
 
-public final class GraphIcons {
+public final class GraphIcons extends AllIcons {
     public static final class Database {
         public static final Icon UNKNOWN = AllIcons.FileTypes.Unknown;
         public static final Icon NEO4J = getIcon("/graphdb/icons/database/neo4j.svg");
@@ -33,13 +34,30 @@ public final class GraphIcons {
         public static final Icon STORED_PROCEDURE = AllIcons.Nodes.Function;
         public static final Icon USER_FUNCTION = AllIcons.Nodes.Function;
         public static final Icon KEY_WORD = AllIcons.Nodes.Alias;
+        public static final Icon DDL = getIcon("/graphdb/icons/nodes/ddl.svg");
         public static final Icon NEBULA_SPACE = getIcon("/graphdb/icons/nodes/space.svg");
         public static final Icon NEBULA_TAG = getIcon("/graphdb/icons/nodes/tag.svg");
         public static final Icon NEBULA_EDGE = getIcon("/graphdb/icons/nodes/edge.svg");
         public static final Icon NEBULA_FIELD = getIcon("/graphdb/icons/nodes/field.svg");
         public static final Icon NEBULA_CONSOLE = getIcon("/graphdb/icons/nodes/console.svg");
+        public static final Icon NEBULA_FIELD_NUM = getIcon("/graphdb/icons/nodes/field_number.svg");
+        public static final Icon NEBULA_FIELD_TIME = getIcon("/graphdb/icons/nodes/field_time.svg");
+        public static final Icon NEBULA_FIELD_STR = getIcon("/graphdb/icons/nodes/field_str.svg");
+        public static final Icon NEBULA_FIELD_BOOLEAN = getIcon("/graphdb/icons/nodes/field_boolean.svg");
     }
 
     private GraphIcons() {
+    }
+
+    public static Icon scaleToWidth(Icon icon, float newWidth) {
+        if (icon instanceof ScalableIcon) {
+            ScalableIcon scalableIcon = (ScalableIcon) icon;
+
+            int iconWidth = scalableIcon.getIconWidth();
+            if (newWidth != iconWidth) {
+                return scalableIcon.scale(newWidth / iconWidth);
+            }
+        }
+        return icon;
     }
 }

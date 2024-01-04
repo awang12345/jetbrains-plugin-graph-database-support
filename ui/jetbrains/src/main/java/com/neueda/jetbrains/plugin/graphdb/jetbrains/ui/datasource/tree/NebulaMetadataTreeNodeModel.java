@@ -15,15 +15,22 @@ public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
     private String value;
     private DataSourceApi dataSourceApi;
 
+    private Object extData;
+
     public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value) {
-        this(type, dataSourceApi, value, null);
+        this(type, dataSourceApi, value, null, null);
     }
 
     public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value, Icon icon) {
+        this(type, dataSourceApi, value, icon, null);
+    }
+
+    public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value, Icon icon, Object extData) {
         this.type = type;
         this.value = value;
         this.dataSourceApi = dataSourceApi;
         this.icon = icon;
+        this.extData = extData;
         prepareContextMenu();
     }
 
@@ -31,7 +38,7 @@ public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
         if (type == NebulaTreeNodeType.SPACE
                 || type == NebulaTreeNodeType.EDGE
                 || type == NebulaTreeNodeType.TAG) {
-            metadataContextMenu = new MetadataContextMenu(type, getDataSourceApi(), value);
+            metadataContextMenu = new MetadataContextMenu(type, getDataSourceApi(), value, this.extData);
         }
     }
 
