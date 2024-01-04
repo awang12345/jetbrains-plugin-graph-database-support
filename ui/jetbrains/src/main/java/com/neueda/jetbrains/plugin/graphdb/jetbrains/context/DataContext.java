@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DataContext {
 
-    private Map<String, String> currentSpace;
+    private Map<String, String> currentSpace = new ConcurrentHashMap<>();
 
     private Map<String, DataSourceMetadata> metadataMap = new ConcurrentHashMap<>();
 

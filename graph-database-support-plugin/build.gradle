@@ -5,6 +5,7 @@ targetCompatibility = 1.8
 
 dependencies {
     compile project(':language:cypher')
+    compile project(':language:ngql')
     compile project(':ui:jetbrains')
 }
 

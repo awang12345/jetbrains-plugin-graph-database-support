@@ -182,6 +182,18 @@
         <codeInsight.lineMarkerProvider language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.component.linemarker.CypherLineMarkerProvider"/>
 
         <projectService serviceImplementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.context.DataContext" serviceInterface="com.neueda.jetbrains.plugin.graphdb.jetbrains.context.DataContext"/>
+
+        <fileType
+                name="nGQL"
+                implementationClass="com.neueda.jetbrains.plugin.graphdb.language.ngql.NGqlFileType"
+                fieldName="INSTANCE"
+                language="nGQL"
+                extensions="ngql"/>
+
+        <lang.syntaxHighlighterFactory
+                language="nGQL"
+                implementationClass="com.neueda.jetbrains.plugin.graphdb.language.ngql.NGqlSyntaxHighlighterFactory"/>
+
     </extensions>
 
     <actions>
