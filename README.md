@@ -6,7 +6,7 @@
 
 Plugin is developed and supported by [awang12345](http://awang12345.github.io/).
 
-![plugin screenshot](docs/screenshots/plugin.png)
+![plugin screenshot](docs/screenshots/nebula-console.gif)
 
 This plugin is based on the
 [Graph Database Support](https://github.com/neueda/jetbrains-plugin-graph-database-support)
