@@ -115,6 +115,7 @@ public class LogPanel implements Disposable {
             @Override
             public void metadataRefreshSucceed(DataSourceApi nodeDataSource, DataSourceMetadata metadata) {
                 DataContext.getInstance(project).addMetadata(nodeDataSource, metadata);
+                DataContext.getInstance(project).addDataSourceApi(nodeDataSource);
                 info(String.format("DataSource[%s] - metadata refreshed successfully!", nodeDataSource.getName()));
                 newLine();
                 newLine();

@@ -10,6 +10,7 @@ dependencies {
     compile project(":platform")
 
     compile project(':language:cypher')
+    compile project(':language:ngql')
     compile project(':database:neo4j')
     compile project(':database:opencypher')
     compile project(':database:nebula')

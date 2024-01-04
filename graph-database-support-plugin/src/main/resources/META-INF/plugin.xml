@@ -194,6 +194,10 @@
                 language="nGQL"
                 implementationClass="com.neueda.jetbrains.plugin.graphdb.language.ngql.NGqlSyntaxHighlighterFactory"/>
 
+        <completion.contributor
+                language="any"
+                implementationClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.NGqlCompletionContributor"/>
+
     </extensions>
 
     <actions>

@@ -5,7 +5,8 @@ import java.util.stream.Stream;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public enum SupportedLanguage {
-    CYPHER("Cypher");
+    CYPHER("Cypher"),
+    NGQL("nGQL");
 
     private final String languageId;
 

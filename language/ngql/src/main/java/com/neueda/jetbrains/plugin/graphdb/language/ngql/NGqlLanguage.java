@@ -1,6 +1,7 @@
 package com.neueda.jetbrains.plugin.graphdb.language.ngql;
 
 import com.intellij.lang.Language;
+import com.neueda.jetbrains.plugin.graphdb.platform.SupportedLanguage;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -13,9 +14,8 @@ public class NGqlLanguage extends Language {
 
     public static final NGqlLanguage INSTANCE = new NGqlLanguage();
 
-    private static final String name = "nGQL";
 
     protected NGqlLanguage() {
-        super(name);
+        super(SupportedLanguage.NGQL.getLanguageId());
     }
 }

@@ -34,7 +34,7 @@ FUNCTION=abs|floor|ceil|round|sqrt|cbrt|hypot|pow|exp|exp2|log|log2|log10
          |strcasecmp|lower|toLower|upper|toUpper|length|trim|ltrim|rtrim|left
          |right|lpad|rpad|substr|substring|reverse|replace|split|toString|hash
          |now|date|time|datetime|id|tags|labels|properties|type|startNode|endNode
-         |rank|keys|labels|nodes|range|relationships|reverse|tail|head|last|coalesce|reduc
+         |rank|keys|labels|nodes|range|relationships|reverse|tail|head|last|coalesce|reduce
 
 %caseless
 KEYWORD=GO|FIND|LOOKUP|FETCH|MATCH|SHOW|UNWIND|AS|TO

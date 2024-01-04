@@ -1,11 +1,10 @@
 package com.neueda.jetbrains.plugin.graphdb.jetbrains.context;
 
 import com.intellij.openapi.project.Project;
-import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourceMetadata;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.util.NameUtil;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -18,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DataContext {
 
     private Map<String, String> currentSpace = new ConcurrentHashMap<>();
+    private Map<String, DataSourceApi> dataSourceApiMap = new ConcurrentHashMap<>();
 
     private Map<String, DataSourceMetadata> metadataMap = new ConcurrentHashMap<>();
 
@@ -37,7 +37,20 @@ public class DataContext {
         return metadataMap.get(dataSourceApi.getUUID());
     }
 
+    public DataSourceMetadata getMetadataByFileName(String fileName) {
+        return metadataMap.get(NameUtil.extractDataSourceUUID(fileName));
+    }
+
     public void addMetadata(DataSourceApi dataSourceApi, DataSourceMetadata metadata) {
         metadataMap.put(dataSourceApi.getUUID(), metadata);
     }
+
+    public void addDataSourceApi(DataSourceApi dataSourceApi) {
+        dataSourceApiMap.put(dataSourceApi.getUUID(), dataSourceApi);
+    }
+
+    public DataSourceApi getDataSourceApiByFileName(String fileName) {
+        return dataSourceApiMap.get(NameUtil.extractDataSourceUUID(fileName));
+    }
+
 }
