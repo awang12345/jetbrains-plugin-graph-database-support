@@ -25,7 +25,7 @@ public class ValueConverter {
         if (canBeTree(value)) {
             return createTree(keyValueToTreeNode(columnName, value, dataSourceApi, value));
         } else if (value instanceof String) {
-            return representUiString((String) value);
+            return value;
         }
 
         return Objects.toString(value);
