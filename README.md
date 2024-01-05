@@ -15,7 +15,7 @@ The original plugin has not been updated for a long time and does not work with 
 
 ## Installation
 
-Plugin is [available for download](https://plugins.jetbrains.com/plugin/8087) from Jetbrains repository.
+Plugin is [available for download](https://plugins.jetbrains.com/plugin/23459-nebula-graph-database-support) from Jetbrains repository.
 
 1. Go to `Preferences` -> `Plugins` -> `Browser repositories...`
 2. Search for `Nebula Console`.
