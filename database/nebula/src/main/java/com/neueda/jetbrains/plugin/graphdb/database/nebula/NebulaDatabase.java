@@ -8,6 +8,7 @@ import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetad
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaTag;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.query.NebulaGraphQueryResult;
+import com.vesoft.nebula.ErrorCode;
 import com.vesoft.nebula.client.graph.SessionPoolConfig;
 import com.vesoft.nebula.client.graph.data.HostAddress;
 import com.vesoft.nebula.client.graph.data.ResultSet;
@@ -43,9 +44,14 @@ public class NebulaDatabase implements GraphDatabaseApi {
                 } else {
                     resultSet = sessionPool.execute(query);
                 }
+                if (resultSet.getErrorCode() != ErrorCode.SUCCEEDED.getValue()) {
+                    throw new RuntimeException("Nebula nGQL execute fail !" + resultSet.getErrorMessage());
+                }
                 return new NebulaGraphQueryResult(startTime, resultSet, null);
+            } catch (RuntimeException e) {
+                throw e;
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Nebula nGQL execute fail!nGQL=" + query, e);
             }
         });
     }
@@ -78,11 +84,16 @@ public class NebulaDatabase implements GraphDatabaseApi {
         return executeInSession(sessionPool -> {
             try {
                 ResultSet resultSet = sessionPool.execute(Consts.Stetments.SHOW_SPACE);
+                if (resultSet.getErrorCode() != ErrorCode.SUCCEEDED.getValue()) {
+                    throw new RuntimeException("Nebula nGQL execute fail !" + resultSet.getErrorMessage());
+                }
                 if (resultSet.rowsSize() == 0) {
                     return new NebulaGraphMetadata(Collections.emptyList());
                 }
                 List<NebulaSpace> spaces = querySpaceList(sessionPool, resultSet);
                 return new NebulaGraphMetadata(spaces);
+            } catch (RuntimeException e) {
+                throw e;
             } catch (Exception e) {
                 throw new RuntimeException("Execute nebula error", e);
             }

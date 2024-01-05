@@ -80,6 +80,7 @@ public class GraphPanel {
                     LinkListener<?> openTableTab = (l, s) -> messageBus.syncPublisher(OPEN_TAB_TOPIC).openTab(Tabs.TABLE);
                     LinkLabel<?> link = new LinkLabel<>("Nothing to display in Graph. Click to view results as Table.", null, openTableTab);
                     entityDetailsTreeModel.setRoot(new PatchedDefaultMutableTreeNode(link));
+                    messageBus.syncPublisher(OPEN_TAB_TOPIC).openTab(Tabs.TABLE);
                 } else if (result.getNodes().isEmpty()) {
                     entityDetailsTreeModel.setRoot(new PatchedDefaultMutableTreeNode("Query returned no results."));
                 } else {

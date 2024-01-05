@@ -112,8 +112,8 @@
                     anchor="bottom"
                     secondary="false"
                     factoryClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.ConsoleToolWindow"
-                    icon="GraphIcons.Window.GRAPH"/>
-        <toolWindow id="Graph Database"
+                    icon="GraphIcons.Nodes.NEBULA_CONSOLE"/>
+        <toolWindow id="Graph Database Setting"
                     anchor="right"
                     secondary="false"
                     factoryClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesToolWindow"
