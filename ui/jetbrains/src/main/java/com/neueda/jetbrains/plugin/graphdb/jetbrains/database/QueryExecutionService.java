@@ -2,6 +2,9 @@ package com.neueda.jetbrains.plugin.graphdb.jetbrains.database;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.util.messages.MessageBus;
 import com.neueda.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
 import com.neueda.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
@@ -10,9 +13,11 @@ import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.analytics.Analyti
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryExecutionProcessEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryPlanEvent;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesToolWindow;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.util.Notifier;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.concurrent.Future;
 
 public class QueryExecutionService {
@@ -20,10 +25,12 @@ public class QueryExecutionService {
     private final DatabaseManagerService databaseManager;
     private final MessageBus messageBus;
     private Future<?> runningQuery;
+    private final Project project;
 
-    public QueryExecutionService(MessageBus messageBus) {
+    public QueryExecutionService(Project project, MessageBus messageBus) {
         this.messageBus = messageBus;
         this.databaseManager = ServiceManager.getService(DatabaseManagerService.class);
+        this.project = project;
     }
 
     public void executeQuery(DataSourceApi dataSource, ExecuteQueryPayload payload) {
@@ -56,10 +63,10 @@ public class QueryExecutionService {
 
         if (payload.getQueries().size() == 1) {
             runningQuery = ApplicationManager.getApplication()
-                .executeOnPooledThread(executeQuery(dataSource, payload, event));
+                    .executeOnPooledThread(executeQuery(dataSource, payload, event));
         } else {
             runningQuery = ApplicationManager.getApplication()
-                .executeOnPooledThread(executeBatch(dataSource, payload, event));
+                    .executeOnPooledThread(executeBatch(dataSource, payload, event));
         }
     }
 
@@ -77,6 +84,12 @@ public class QueryExecutionService {
                 GraphQueryResult result = database.execute(query, payload.getParameters());
 
                 ApplicationManager.getApplication().invokeLater(() -> {
+                    
+                    Optional.ofNullable(ToolWindowManager.getInstance(project).getToolWindow(DataSourcesToolWindow.ID))
+                            .ifPresent(toolWindow -> {
+                                toolWindow.show(null);
+                            });
+
                     event.resultReceived(payload, result);
                     event.postResultReceived(payload);
                     event.executionCompleted(payload);
@@ -101,7 +114,7 @@ public class QueryExecutionService {
             try {
                 GraphDatabaseApi database = databaseManager.getDatabaseFor(dataSource);
                 for (String query : payload.getQueries()) {
-                     database.execute(query, payload.getParameters());
+                    database.execute(query, payload.getParameters());
                 }
             } catch (Exception e) {
                 ApplicationManager.getApplication().invokeLater(() -> {

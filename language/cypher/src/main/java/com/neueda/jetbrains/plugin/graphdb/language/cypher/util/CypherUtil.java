@@ -9,6 +9,7 @@ import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.indexing.FileBasedIndex;
+import com.intellij.util.indexing.ID;
 import com.neueda.jetbrains.plugin.graphdb.language.cypher.file.CypherFile;
 import com.neueda.jetbrains.plugin.graphdb.language.cypher.file.CypherFileType;
 import com.neueda.jetbrains.plugin.graphdb.language.cypher.references.CypherNamedElement;
@@ -49,7 +50,7 @@ public class CypherUtil {
 
     public static <T extends CypherNamedElement> List<T> findAllAndFilter(Project project, IElementType elementType, Filter filter) {
         Collection<VirtualFile> virtualFiles = FileBasedIndex.getInstance()
-                .getContainingFiles(FileTypeIndex.NAME, CypherFileType.INSTANCE, GlobalSearchScope.allScope(project));
+                .getContainingFiles(ID.create("filetypes"), CypherFileType.INSTANCE, GlobalSearchScope.allScope(project));
 
         List<T> result = new ArrayList<>();
         for (VirtualFile virtualFile : virtualFiles) {

@@ -1,10 +1,10 @@
 package com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.plan;
 
-import com.intellij.codeInsight.completion.*;
+import com.intellij.codeInsight.completion.CompletionContributor;
+import com.intellij.codeInsight.completion.CompletionParameters;
+import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
-import com.intellij.patterns.PlatformPatterns;
-import com.intellij.util.ProcessingContext;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaEdge;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaTag;
@@ -12,11 +12,13 @@ import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.metada
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.NebulaDataSourceMetadata;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.context.DataContext;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.CommonConsoleLogEvent;
-import com.neueda.jetbrains.plugin.graphdb.language.ngql.NGqlLanguage;
-import com.neueda.jetbrains.plugin.graphdb.language.ngql.psi.NGqlTypes;
+import com.neueda.jetbrains.plugin.graphdb.language.ngql.NGqlFileType;
+import com.neueda.jetbrains.plugin.graphdb.platform.GraphConstants;
 import icons.GraphIcons;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -58,34 +60,38 @@ public class NGqlCompletionContributor extends CompletionContributor {
 
     @Override
     public void fillCompletionVariants(@NotNull CompletionParameters parameters, @NotNull CompletionResultSet result) {
+        String fileName = parameters.getOriginalFile().getVirtualFile().getName();
+        if (!fileName.startsWith(GraphConstants.BOUND_DATA_SOURCE_PREFIX) || !fileName.endsWith(NGqlFileType.FILE_EXT)) {
+            return;
+        }
         customFillCompletionVariants(parameters, result);
         super.fillCompletionVariants(parameters, result);
     }
 
     private void customFillCompletionVariants(CompletionParameters parameters, CompletionResultSet result) {
         addSpaceTagEdgePropKeyword(parameters, result);
+        addFunctionAndKeyword(result);
+    }
 
-        String[] functionArray = functions.split("\\|");
+    private void addFunctionAndKeyword(CompletionResultSet result) {
+        String[] functionArray = functions.split("[\\|\n]+");
         for (String function : functionArray) {
-            result.addElement(LookupElementBuilder.create(function)
-                    .withPresentableText(function)
-                    .withIcon(GraphIcons.Nodes.FUNCTION)
-                    .withTypeText("Function")
-                    .bold());
+            addElement(result, function, GraphIcons.Nodes.FUNCTION, "Function");
         }
 
-        String[] keywordArray = keywords.split("\\|");
+        String[] keywordArray = keywords.split("[\\|\n]+");
         for (String keyword : keywordArray) {
-            result.addElement(LookupElementBuilder.create(keyword)
-                    .withPresentableText(keyword)
-                    .withIcon(GraphIcons.Nodes.KEY_WORD)
-                    .withTypeText("Keyword")
-                    .bold());
+            addElement(result, keyword, GraphIcons.Nodes.KEY_WORD, "Keyword");
         }
     }
 
     private void addSpaceTagEdgePropKeyword(CompletionParameters parameters, CompletionResultSet result) {
         String fileName = parameters.getOriginalFile().getVirtualFile().getName();
+
+        if (!fileName.startsWith(GraphConstants.BOUND_DATA_SOURCE_PREFIX)) {
+            return;
+        }
+
         Project project = parameters.getOriginalFile().getProject();
 
         DataSourceMetadata metadata = DataContext.getInstance(project).getMetadataByFileName(fileName);
@@ -98,31 +104,16 @@ public class NGqlCompletionContributor extends CompletionContributor {
         }
 
         for (NebulaSpace nebulaSpace : nebulaSpaceList) {
-            result.addElement(LookupElementBuilder
-                    .create(nebulaSpace.getSpaceName())
-                    .withPresentableText(nebulaSpace.getSpaceName())
-                    .withIcon(GraphIcons.Nodes.NEBULA_SPACE)
-                    .withTypeText("Space")
-                    .bold());
+            addElement(result, nebulaSpace.getSpaceName(), GraphIcons.Nodes.NEBULA_SPACE, "Space");
 
             List<NebulaTag> tagList = nebulaSpace.getTagList();
             if (tagList != null) {
                 for (NebulaTag nebulaTag : tagList) {
-                    result.addElement(LookupElementBuilder
-                            .create(nebulaTag.getTagName())
-                            .withPresentableText(nebulaTag.getTagName())
-                            .withIcon(GraphIcons.Nodes.NEBULA_TAG)
-                            .withTypeText("Tag")
-                            .bold());
+                    addElement(result, nebulaTag.getTagName(), GraphIcons.Nodes.NEBULA_TAG, "Tag");
 
                     if (nebulaTag.getProperties() != null) {
                         for (String prop : nebulaTag.getProperties().keySet()) {
-                            result.addElement(LookupElementBuilder
-                                    .create(prop)
-                                    .withPresentableText(prop)
-                                    .withIcon(GraphIcons.Nodes.NEBULA_FIELD)
-                                    .withTypeText("Field")
-                                    .bold());
+                            addElement(result, prop, GraphIcons.Nodes.NEBULA_FIELD, "Field");
                         }
                     }
                 }
@@ -131,26 +122,27 @@ public class NGqlCompletionContributor extends CompletionContributor {
             List<NebulaEdge> edgeList = nebulaSpace.getEdgeList();
             if (edgeList != null) {
                 for (NebulaEdge nebulaEdge : edgeList) {
-                    result.addElement(LookupElementBuilder
-                            .create(nebulaEdge.getTagName())
-                            .withPresentableText(nebulaEdge.getTagName())
-                            .withIcon(GraphIcons.Nodes.NEBULA_EDGE)
-                            .withTypeText("Tag")
-                            .bold());
+                    addElement(result, nebulaEdge.getTagName(), GraphIcons.Nodes.NEBULA_EDGE, "Tag");
 
                     if (nebulaEdge.getProperties() != null) {
                         for (String prop : nebulaEdge.getProperties().keySet()) {
-                            result.addElement(LookupElementBuilder
-                                    .create(prop)
-                                    .withPresentableText(prop)
-                                    .withIcon(GraphIcons.Nodes.NEBULA_FIELD)
-                                    .withTypeText("Field")
-                                    .bold());
+                            addElement(result, prop, GraphIcons.Nodes.NEBULA_FIELD, "Field");
                         }
                     }
                 }
             }
         }
+    }
+
+    private static void addElement(CompletionResultSet result, String prop, Icon nebulaField, String Field) {
+        result.addElement(LookupElementBuilder
+                .create(prop)
+                .withPresentableText(prop)
+                .withIcon(nebulaField)
+                .withTypeText(Field)
+                .withCaseSensitivity(false)
+                .bold());
+
     }
 
 }

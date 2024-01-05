@@ -12,8 +12,11 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.openapi.fileEditor.*;
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.fileEditor.impl.EditorTabPresentationUtil;
+import com.intellij.openapi.fileEditor.impl.EditorTabTitleProvider;
 import com.intellij.openapi.fileEditor.impl.EditorWindow;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileEvent;
 import com.intellij.openapi.vfs.VirtualFileListener;
@@ -27,7 +30,9 @@ import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.GraphConsoleView
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryParametersRetrievalErrorEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.util.FileUtil;
 import com.neueda.jetbrains.plugin.graphdb.language.cypher.util.FileTypeExtensionUtil;
+import com.neueda.jetbrains.plugin.graphdb.language.ngql.NGqlFileType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -166,9 +171,7 @@ public class ParametersPanel implements ParametersProvider {
     }
 
     private String getTabTitle(VirtualFile file) {
-        Window window = WindowManagerEx.getInstanceEx().getMostRecentFocusedWindow();
-        EditorWindow editorWindow = FileEditorManagerEx.getInstanceEx(project).getSplittersFor(window).getCurrentWindow();
-        return EditorTabPresentationUtil.getEditorTabTitle(project, file, editorWindow);
+        return file.getPresentableName();
     }
 
     private void setInitialContent(Document document) {

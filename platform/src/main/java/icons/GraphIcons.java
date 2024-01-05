@@ -34,6 +34,8 @@ public final class GraphIcons extends AllIcons {
         public static final Icon STORED_PROCEDURE = AllIcons.Nodes.Function;
         public static final Icon USER_FUNCTION = AllIcons.Nodes.Function;
         public static final Icon KEY_WORD = AllIcons.Nodes.Alias;
+        public static final Icon PROCESS_OK = getIcon("/graphdb/icons/nodes/process_success.svg");
+        public static final Icon PROCESS_FAIL = getIcon("/graphdb/icons/nodes/process_fail.svg");
         public static final Icon DDL = getIcon("/graphdb/icons/nodes/ddl.svg");
         public static final Icon NEBULA_SPACE = getIcon("/graphdb/icons/nodes/space.svg");
         public static final Icon NEBULA_TAG = getIcon("/graphdb/icons/nodes/tag.svg");

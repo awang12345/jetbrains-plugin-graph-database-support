@@ -6,6 +6,7 @@ import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.SQLConsoleToolbarForm;
+import com.neueda.jetbrains.plugin.graphdb.language.ngql.NGqlFileType;
 import com.neueda.jetbrains.plugin.graphdb.platform.GraphConstants;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +22,7 @@ public class NebulaConsoleEditorFileListener implements FileEditorManagerListene
 
     @Override
     public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
-        if (!isSqlConsoleFile(source, file)) {
+        if (!isNGqlConsoleFile(source, file)) {
             return;
         }
         Project project = source.getProject();
@@ -39,7 +40,7 @@ public class NebulaConsoleEditorFileListener implements FileEditorManagerListene
         FileEditorManagerListener.super.fileClosed(source, file);
     }
 
-    private boolean isSqlConsoleFile(FileEditorManager source, VirtualFile file) {
-        return file.getName().startsWith(GraphConstants.BOUND_DATA_SOURCE_PREFIX);
+    private boolean isNGqlConsoleFile(FileEditorManager source, VirtualFile file) {
+        return file.getName().startsWith(GraphConstants.BOUND_DATA_SOURCE_PREFIX) && file.getName().endsWith(NGqlFileType.FILE_EXT);
     }
 }

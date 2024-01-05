@@ -26,7 +26,7 @@ public class NodeDeleteAction extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         Project project = getEventProject(e);
         if (project != null) {
-            QueryExecutionService service = new QueryExecutionService(project.getMessageBus());
+            QueryExecutionService service = new QueryExecutionService(project, project.getMessageBus());
 
             service.executeQuery(dataSource, new ExecuteQueryPayload("MATCH (n) WHERE ID(n) = $id DETACH DELETE n",
                     ImmutableMap.of("id", Long.parseLong(node.getId())),

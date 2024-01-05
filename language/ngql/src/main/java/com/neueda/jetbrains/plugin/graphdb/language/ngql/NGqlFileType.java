@@ -18,6 +18,8 @@ public class NGqlFileType extends LanguageFileType {
 
     public static final NGqlFileType INSTANCE = new NGqlFileType();
 
+    public static final String FILE_EXT = "ngql";
+
     protected NGqlFileType() {
         super(NGqlLanguage.INSTANCE);
     }
@@ -25,7 +27,7 @@ public class NGqlFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getName() {
-        return "nGQL";
+        return NGqlLanguage.INSTANCE.getID();
     }
 
     @NotNull
@@ -37,7 +39,7 @@ public class NGqlFileType extends LanguageFileType {
     @NotNull
     @Override
     public String getDefaultExtension() {
-        return "ngql";
+        return FILE_EXT;
     }
 
     @Nullable

@@ -1,10 +1,8 @@
 package com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.plan;
 
-import com.intellij.diagnostic.PerformanceWatcher;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.components.ServiceManager;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -15,21 +13,27 @@ import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetad
 import com.neueda.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryPayload;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourcesComponent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourceMetadata;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.NebulaDataSourceMetadata;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.Neo4jBoltCypherDataSourceMetadata;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.context.DataContext;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerService;
-import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.ConsoleToolWindow;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.CommonConsoleLogEvent;
+import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.MetadataRetrieveEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.util.NameUtil;
 import com.neueda.jetbrains.plugin.graphdb.platform.GraphConstants;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
+import static com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType.NEBULA;
 import static java.util.Objects.nonNull;
 
 /**
@@ -50,7 +54,7 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
         DefaultActionGroup actionGroup = new DefaultActionGroup();
         if (Objects.isNull(dataSourceApi)) return actionGroup;
 
-        DataSourceMetadata metadata = DataContext.getInstance(this.project).getMetadata(dataSourceApi);
+        DataSourceMetadata metadata = getDataSourceMetadata();
         if (metadata == null || !(metadata instanceof NebulaDataSourceMetadata)) return actionGroup;
         List<NebulaSpace> nebulaSpaceList = ((NebulaDataSourceMetadata) metadata).getNebulaGraphMetadata().getNebulaSpaceList();
         if (nebulaSpaceList == null || nebulaSpaceList.isEmpty()) {
@@ -66,6 +70,18 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
             });
         }
         return actionGroup;
+    }
+
+    private DataSourceMetadata getDataSourceMetadata() {
+        DataSourceMetadata metadata = DataContext.getInstance(this.project).getMetadata(dataSourceApi);
+        if (metadata == null) {
+            DatabaseManagerService databaseManagerService = ServiceManager.getService(DatabaseManagerService.class);
+            GraphDatabaseApi database = databaseManagerService.getDatabaseFor(dataSourceApi);
+            NebulaGraphMetadata graphMetadata = (NebulaGraphMetadata) database.metadata();
+            metadata = new NebulaDataSourceMetadata(graphMetadata);
+            DataContext.getInstance(this.project).addMetadata(dataSourceApi, metadata);
+        }
+        return metadata;
     }
 
     private void switchSpace(AnActionEvent e, String space) {
@@ -105,5 +121,6 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
             presentation.setDescription("Switch space");
         }
     }
+
 
 }

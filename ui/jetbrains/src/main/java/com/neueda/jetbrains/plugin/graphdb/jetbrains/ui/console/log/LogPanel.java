@@ -25,6 +25,7 @@ import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.CommonCons
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryExecutionProcessEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryParametersRetrievalErrorEvent;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.MetadataRetrieveEvent;
+import icons.GraphIcons;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -209,7 +210,7 @@ public class LogPanel implements Disposable {
         JTextArea exceptionDetails = new JTextArea();
         exceptionDetails.setLineWrap(false);
         exceptionDetails.append(details);
-        JLabel jLabel = new JLabel(exception.getMessage(), AllIcons.Process.State.RedExcl, JLabel.LEFT);
+        JLabel jLabel = new JLabel(exception.getMessage(), GraphIcons.Nodes.PROCESS_FAIL, JLabel.LEFT);
 
         JBScrollPane scrollPane = new JBScrollPane(exceptionDetails);
         scrollPane.setPreferredSize(new Dimension(-1, HEIGHT));

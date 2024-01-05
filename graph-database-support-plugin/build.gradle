@@ -12,12 +12,12 @@ dependencies {
 
 intellij {
     version intellijSdkVersion
-    pluginName 'GraphDatabaseSupport'
+    pluginName 'NebulaGraphDatabaseSupport'
     updateSinceUntilBuild false
     sameSinceUntilBuild false
 
     publishPlugin {
-        token System.getenv("INTELLIJ_TOKEN")
+        token 'perm:YXdhbmc5Mzk0OTU=.OTItOTM0Mg==.zC666E4QBFGJJ81nSZQI2u2Us21FGa'
     }
 
     if (System.getenv("CI_SERVER") == "yes") {

@@ -109,7 +109,7 @@ public class GraphPanel {
         this.interactions = new GraphPanelInteractions(
                 graphConsoleView,
                 messageBus,
-                visualization);
+                visualization, project);
     }
 
     public void showNodeData(GraphNode node, VisualItem item, MouseEvent e) {

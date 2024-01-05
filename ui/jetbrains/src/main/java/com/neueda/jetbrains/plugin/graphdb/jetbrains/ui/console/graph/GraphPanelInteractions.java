@@ -1,6 +1,7 @@
 package com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.graph;
 
 import com.intellij.codeInsight.hint.HintManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBus;
 import com.neueda.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
 import com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryEvent;
@@ -21,11 +22,11 @@ public class GraphPanelInteractions {
     private final VisualizationApi visualization;
 
     public GraphPanelInteractions(GraphConsoleView graphConsoleView,
-                                  MessageBus messageBus, VisualizationApi visualization) {
+                                  MessageBus messageBus, VisualizationApi visualization,Project project) {
         this.graphConsoleView = graphConsoleView;
         this.messageBus = messageBus;
         this.visualization = visualization;
-        this.queryExecutionService = new QueryExecutionService(messageBus);
+        this.queryExecutionService = new QueryExecutionService(project,messageBus);
 
         registerMessageBusSubscribers();
         registerVisualisationEvents();
