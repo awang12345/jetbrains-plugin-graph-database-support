@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/awang12345/nebula-console-for-idea.svg?branch=master)](https://travis-ci.org/awang12345/nebula-console-for-idea)
 
 ## Plugin for [IntelliJ IDEA](http://plugins.jetbrains.com/plugin/6317-lombok-plugin) to support [Nebula-Console](https://docs.nebula-graph.com.cn/3.6.0/nebula-console/).
+___
 - Provides support for console to manage nebula data with IntelliJ IDEA.
 
 Plugin is developed and supported by [awang12345](http://awang12345.github.io/).
@@ -13,16 +14,8 @@ This plugin is based on the
 plugin, originally developed by [Neueda Technologies](http://technologies.neueda.com/).
 The original plugin has not been updated for a long time and does not work with Nebula.
 
-## Installation
-
-Plugin is [available for download](https://plugins.jetbrains.com/plugin/23459-nebula-graph-database-support) from Jetbrains repository.
-
-1. Go to `Preferences` -> `Plugins` -> `Browser repositories...`
-2. Search for `Nebula Console`.
-3. Install plugin and restart IDE.
-
 ## Features
-
+___
 - Works in **any** Jetbrains IDE
 - Manage data sources
 - Write and execute queries
@@ -45,8 +38,21 @@ Plugin is [available for download](https://plugins.jetbrains.com/plugin/23459-ne
   - Provide documentation for functions and stored procedures
   - Inspections: database warnings, function checks, type system. 
 
-## Supported Jetbrains products
+## How To Use
+___
+1. Install the plugin
+   * Search "Nebula Graph" from the [Jetbrains Plugin Marketing](https://plugins.jetbrains.com/plugin/23459-nebula-graph-database-support) .
+   * Download plugin file from the [release](https://github.com/nebula-contrib/nebula-console-intellij-plugin/releases) and install it manually.
+2. In the sidebar toolwindow of idea IDE find "![database_setting.svg](docs%2Ficons%2Fdatabase_setting.svg)"  menu
+3. Click "+" button to add a graph database config and verify that the connection is valid.
+4. Click "![refresh.svg](docs%2Ficons%2Frefresh.svg)" button to refresh the database metadata.
+5. Double-click the root node (datasource name) to open the graph sql editor panel.
+6. Write your sql on editor panel and right click and choose Run.Or click "![run_sql.svg](docs%2Ficons%2Frun_sql.svg)" button to run your sql.
+7. The sql result show in the console panel below the editor panel.The **"log"** table show the execute log information.The **"table"** table show the result information.
 
+
+## Supported Jetbrains Products
+___
 * IntelliJ IDEA
 * RubyMine
 * WebStorm
@@ -58,16 +64,15 @@ Plugin is [available for download](https://plugins.jetbrains.com/plugin/23459-ne
 * CLion
 
 ## Development
-
+___
 Warning: Required to switch local environment to JDK 11.
 
 Gradle is used as build system.
 
-```shell
+``` Build And Run
 # Build plugin distribution
 ./gradlew buildPlugin
 
 # Run idea in development mode
 ./gradlew :graph-database-support-plugin:runIde
 ```
-
