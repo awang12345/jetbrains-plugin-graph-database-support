@@ -1,0 +1,24 @@
+package com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree;
+
+public enum Neo4jTreeNodeType implements NodeType {
+    ROOT,
+    DATASOURCE,
+    INDEXES,
+    INDEX,
+    CONSTRAINTS,
+    CONSTRAINT,
+    LABELS,
+    LABEL,
+    RELATIONSHIPS,
+    RELATIONSHIP,
+    PROPERTY_KEYS,
+    PROPERTY_KEY,
+    STORED_PROCEDURES,
+    STORED_PROCEDURE,
+    USER_FUNCTIONS,
+    USER_FUNCTION;
+
+    Neo4jTreeNodeType() {
+    }
+
+}

@@ -76,32 +76,32 @@
     <application-components>
         <!-- Settings -->
         <component>
-            <interface-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.settings.SettingsComponent</interface-class>
-            <implementation-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.settings.SettingsComponentImpl</implementation-class>
+            <interface-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.settings.SettingsComponent</interface-class>
+            <implementation-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.settings.SettingsComponentImpl</implementation-class>
         </component>
         <!-- Google analytics component -->
         <component>
-            <interface-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.analytics.AnalyticsApplicationComponent</interface-class>
-            <implementation-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.analytics.GoogleAnalyticsApplicationComponent</implementation-class>
+            <interface-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.analytics.AnalyticsApplicationComponent</interface-class>
+            <implementation-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.analytics.GoogleAnalyticsApplicationComponent</implementation-class>
         </component>
         <!-- Graph Database support - query statement highlighting -->
         <component>
-            <interface-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.highlighter.QueryHighlighterComponent</interface-class>
-            <implementation-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.highlighter.QueryHighlighterComponentImpl</implementation-class>
+            <interface-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.highlighter.QueryHighlighterComponent</interface-class>
+            <implementation-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.highlighter.QueryHighlighterComponentImpl</implementation-class>
         </component>
     </application-components>
 
     <project-components>
         <!-- Graph Database support - data sources -->
         <component>
-            <interface-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourcesComponent</interface-class>
-            <implementation-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourcesComponent</implementation-class>
+            <interface-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourcesComponent</interface-class>
+            <implementation-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourcesComponent</implementation-class>
             <loadForDefaultProject/>
         </component>
         <!-- Graph Database support - data sources metadata -->
         <component>
-            <interface-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourcesComponentMetadata</interface-class>
-            <implementation-class>com.neueda.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourcesComponentMetadata</implementation-class>
+            <interface-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourcesComponentMetadata</interface-class>
+            <implementation-class>com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourcesComponentMetadata</implementation-class>
             <loadForDefaultProject/>
         </component>
     </project-components>
@@ -111,89 +111,89 @@
         <toolWindow id="Graph Database Console"
                     anchor="bottom"
                     secondary="false"
-                    factoryClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.ConsoleToolWindow"
+                    factoryClass="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.ConsoleToolWindow"
                     icon="GraphIcons.Nodes.NEBULA_CONSOLE"/>
         <toolWindow id="Graph Database Setting"
                     anchor="right"
                     secondary="false"
-                    factoryClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesToolWindow"
+                    factoryClass="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesToolWindow"
                     icon="GraphIcons.Window.GRAPH"/>
-        <actionPromoter implementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryActionPromoter"/>
-        <applicationService serviceInterface="com.neueda.jetbrains.plugin.graphdb.visualization.services.LookAndFeelService"
-                            serviceImplementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.services.IdeaLookAndFeelService"/>
-        <applicationService serviceInterface="com.neueda.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerService"
-                            serviceImplementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerServiceImpl"/>
+        <actionPromoter implementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryActionPromoter"/>
+        <applicationService serviceInterface="com.vesoft.jetbrains.plugin.graphdb.visualization.services.LookAndFeelService"
+                            serviceImplementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.services.IdeaLookAndFeelService"/>
+        <applicationService serviceInterface="com.vesoft.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerService"
+                            serviceImplementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerServiceImpl"/>
         <applicationService
-                serviceInterface="com.neueda.jetbrains.plugin.graphdb.jetbrains.services.ExecutorService"
-                serviceImplementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.services.ExecutorServiceImpl"/>
-        <projectService serviceInterface="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.GraphConsoleView"
-                        serviceImplementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.GraphConsoleView"/>
-        <projectService serviceInterface="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesView"
-                        serviceImplementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesView"/>
-        <projectService serviceInterface="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.params.ParametersService"
-                        serviceImplementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.params.ParametersService"/>
-        <scratch.rootType implementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.GraphDbEditorsConsoleRootType"/>
-        <scratch.rootType implementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.params.ParameterRootType"/>
+                serviceInterface="com.vesoft.jetbrains.plugin.graphdb.jetbrains.services.ExecutorService"
+                serviceImplementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.services.ExecutorServiceImpl"/>
+        <projectService serviceInterface="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.GraphConsoleView"
+                        serviceImplementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.GraphConsoleView"/>
+        <projectService serviceInterface="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesView"
+                        serviceImplementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesView"/>
+        <projectService serviceInterface="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.params.ParametersService"
+                        serviceImplementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.params.ParametersService"/>
+        <scratch.rootType implementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.GraphDbEditorsConsoleRootType"/>
+        <scratch.rootType implementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.params.ParameterRootType"/>
         <applicationConfigurable groupId="tools"
-                                 instance="com.neueda.jetbrains.plugin.graphdb.jetbrains.configuration.GraphDatabaseSupportConfiguration"/>
+                                 instance="com.vesoft.jetbrains.plugin.graphdb.jetbrains.configuration.GraphDatabaseSupportConfiguration"/>
         <!-- Update notification -->
-        <postStartupActivity implementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.component.updater.PluginUpdateActivity" />
+        <postStartupActivity implementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.updater.PluginUpdateActivity" />
         <!-- Cypher -->
-        <fileTypeFactory implementation="com.neueda.jetbrains.plugin.graphdb.language.cypher.file.CypherFileTypeFactory"/>
+        <fileTypeFactory implementation="com.vesoft.jetbrains.plugin.graphdb.language.cypher.file.CypherFileTypeFactory"/>
         <lang.parserDefinition
-                language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.CypherParserDefinition"/>
+                language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.CypherParserDefinition"/>
         <lang.syntaxHighlighterFactory
-                language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.highlight.CypherSyntaxHighlighterFactory"/>
-        <annotator language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.highlight.CypherSyntaxHighlighterAnnotator"/>
-        <lang.commenter language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.commenter.CypherCommenter"/>
+                language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.highlight.CypherSyntaxHighlighterFactory"/>
+        <annotator language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.highlight.CypherSyntaxHighlighterAnnotator"/>
+        <lang.commenter language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.commenter.CypherCommenter"/>
 
-        <colorSettingsPage implementation="com.neueda.jetbrains.plugin.graphdb.language.cypher.settings.CypherColorSettingsPage"/>
+        <colorSettingsPage implementation="com.vesoft.jetbrains.plugin.graphdb.language.cypher.settings.CypherColorSettingsPage"/>
 
-        <completion.contributor language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.completion.CypherCompletionContributor"/>
-        <psi.referenceContributor implementation="com.neueda.jetbrains.plugin.graphdb.language.cypher.references.CypherReferenceContributor"/>
-        <lang.refactoringSupport language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.references.CypherRefactoringSupportProvider"/>
-        <lang.braceMatcher language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.lang.CypherBraceMatcher"/>
-        <renameInputValidator implementation="com.neueda.jetbrains.plugin.graphdb.language.cypher.references.CypherRenameInputValidator"/>
-        <lang.namesValidator language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.lang.CypherNameValidator"/>
-        <spellchecker.support language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.lang.CypherSpellcheckingStrategy"/>
-        <projectService serviceInterface="com.neueda.jetbrains.plugin.graphdb.language.cypher.completion.metadata.CypherMetadataProviderService"
-                        serviceImplementation="com.neueda.jetbrains.plugin.graphdb.language.cypher.completion.metadata.CypherMetadataProviderServiceImpl"/>
-        <lang.documentationProvider language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.documentation.CypherDocumentationProvider"/>
+        <completion.contributor language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.completion.CypherCompletionContributor"/>
+        <psi.referenceContributor implementation="com.vesoft.jetbrains.plugin.graphdb.language.cypher.references.CypherReferenceContributor"/>
+        <lang.refactoringSupport language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.references.CypherRefactoringSupportProvider"/>
+        <lang.braceMatcher language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.lang.CypherBraceMatcher"/>
+        <renameInputValidator implementation="com.vesoft.jetbrains.plugin.graphdb.language.cypher.references.CypherRenameInputValidator"/>
+        <lang.namesValidator language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.lang.CypherNameValidator"/>
+        <spellchecker.support language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.lang.CypherSpellcheckingStrategy"/>
+        <projectService serviceInterface="com.vesoft.jetbrains.plugin.graphdb.language.cypher.completion.metadata.CypherMetadataProviderService"
+                        serviceImplementation="com.vesoft.jetbrains.plugin.graphdb.language.cypher.completion.metadata.CypherMetadataProviderServiceImpl"/>
+        <lang.documentationProvider language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.documentation.CypherDocumentationProvider"/>
 
         <localInspection language="Cypher" displayName="Cypher EXPLAIN warning inspection" groupPath="Cypher"
                          groupName="General" enabledByDefault="true" level="WARNING"
-                         implementationClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.inspection.CypherExplainWarningInspection"/>
+                         implementationClass="com.vesoft.jetbrains.plugin.graphdb.jetbrains.inspection.CypherExplainWarningInspection"/>
         <localInspection language="Cypher" displayName="Function call inspection" groupPath="Cypher"
                          groupName="General" enabledByDefault="true" level="ERROR"
-                         implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.inspections.CypherFunctionCallInspection"/>
+                         implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.inspections.CypherFunctionCallInspection"/>
 
-        <codeInsight.parameterInfo language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.editor.CypherParameterInfoHandler"/>
+        <codeInsight.parameterInfo language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.editor.CypherParameterInfoHandler"/>
 
-        <typedHandler implementation="com.neueda.jetbrains.plugin.graphdb.language.cypher.editor.CypherTypedHandlerDelegate" />
+        <typedHandler implementation="com.vesoft.jetbrains.plugin.graphdb.language.cypher.editor.CypherTypedHandlerDelegate" />
 
-        <codeStyleSettingsProvider implementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.formatter.CypherCodeStyleSettingsProvider"/>
-        <langCodeStyleSettingsProvider implementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.formatter.CypherLanguageCodeStyleSettingsProvider"/>
+        <codeStyleSettingsProvider implementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.formatter.CypherCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider implementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.formatter.CypherLanguageCodeStyleSettingsProvider"/>
 
-        <lang.formatter language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.language.cypher.formatter.CypherFormattingModelBuilder"/>
-        <preFormatProcessor implementation="com.neueda.jetbrains.plugin.graphdb.language.cypher.formatter.CypherPreFormatter" />
-        <codeInsight.lineMarkerProvider language="Cypher" implementationClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.component.linemarker.CypherLineMarkerProvider"/>
+        <lang.formatter language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.cypher.formatter.CypherFormattingModelBuilder"/>
+        <preFormatProcessor implementation="com.vesoft.jetbrains.plugin.graphdb.language.cypher.formatter.CypherPreFormatter" />
+        <codeInsight.lineMarkerProvider language="Cypher" implementationClass="com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.linemarker.CypherLineMarkerProvider"/>
 
-        <projectService serviceImplementation="com.neueda.jetbrains.plugin.graphdb.jetbrains.context.DataContext" serviceInterface="com.neueda.jetbrains.plugin.graphdb.jetbrains.context.DataContext"/>
+        <projectService serviceImplementation="com.vesoft.jetbrains.plugin.graphdb.jetbrains.context.DataContext" serviceInterface="com.vesoft.jetbrains.plugin.graphdb.jetbrains.context.DataContext"/>
 
         <fileType
                 name="nGQL"
-                implementationClass="com.neueda.jetbrains.plugin.graphdb.language.ngql.NGqlFileType"
+                implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.ngql.NGqlFileType"
                 fieldName="INSTANCE"
                 language="nGQL"
                 extensions="ngql"/>
 
         <lang.syntaxHighlighterFactory
                 language="nGQL"
-                implementationClass="com.neueda.jetbrains.plugin.graphdb.language.ngql.NGqlSyntaxHighlighterFactory"/>
+                implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.ngql.NGqlSyntaxHighlighterFactory"/>
 
         <completion.contributor
                 language="any"
-                implementationClass="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.NGqlCompletionContributor"/>
+                implementationClass="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.NGqlCompletionContributor"/>
 
     </extensions>
 
@@ -204,7 +204,7 @@
                icon="GraphIcons.Window.GRAPH" popup="true">
 
             <action id="GraphDatabaseActionGroup.ExecuteQuery"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryAction"
                     text="Execute Query"
                     icon="AllIcons.RunConfigurations.TestState.Run"
                     description="Execute query">
@@ -212,19 +212,19 @@
                                    keymap="$default"/>
             </action>
             <action id="GraphDatabaseActionGroup.ExplainQuery"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExplainQueryAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExplainQueryAction"
                     text="Explain Query"
                     icon="AllIcons.RunConfigurations.TestState.Run"
                     description="Explain query">
             </action>
             <action id="GraphDatabaseActionGroup.ProfileQuery"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ProfileQueryAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ProfileQueryAction"
                     text="Profile Query"
                     icon="AllIcons.RunConfigurations.TestState.Run"
                     description="Profile query">
             </action>
             <action id="GraphDatabaseActionGroup.TranslateQuery"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.TranslateQueryAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.TranslateQueryAction"
                     text="Translate Query to Gremlin..."
                     icon="GraphIcons.Database.OPENCYPHER"
                     description="Profile query">
@@ -236,19 +236,19 @@
                text="Graph Database Console Tool Window Actions">
 
             <action id="GraphDatabaseConsoleToolWindowActions.ExecuteQuery"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryAction"
                     text="Execute Query"
                     icon="AllIcons.Toolwindows.ToolWindowRun"
                     description="Execute query">
             </action>
             <action id="GraphDatabaseConsoleToolWindowActions.CleanCanvas"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.ui.console.CleanCanvasAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.ui.console.CleanCanvasAction"
                     text="Clean Canvas"
                     icon="AllIcons.Actions.Refresh"
                     description="Clean canvas">
             </action>
             <action id="GraphDatabaseConsoleToolWindowActions.CopyQueryOutput"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.ui.console.CopyQueryOutputAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.ui.console.CopyQueryOutputAction"
                     text="Copy Query Result to Clipboard"
                     icon="AllIcons.Actions.Copy"
                     description="Copy query result to clipboard">
@@ -259,7 +259,7 @@
                text="Graph Database File Actions" description="Graph database file actions"
                icon="GraphIcons.Window.GRAPH" popup="true">
             <action id="GraphDatabaseFileActions.ExecuteAll"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteAllAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteAllAction"
                     text="Execute All"
                     icon="AllIcons.RunConfigurations.TestState.Run">
             </action>
@@ -269,12 +269,12 @@
         <!--SQL编辑器相关-->
         <group id="NebulaGraph.ActionGroup.SQLFileEditor" text="File Editor Controls">
             <action id="NebulaGraph.Actions.CurrentSchema"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.SQLConsoleSpaceSelectAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.SQLConsoleSpaceSelectAction"
                     text="--Space--">
             </action>
 
             <action id="NebulaGraph.Actions.SQLExecute"
-                    class="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.ExecuteConsoleEditorSQLAction"
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.ExecuteConsoleEditorSQLAction"
                     text="Execute select nGQL" icon="/graphdb/icons/nodes/StatementExecution.png">
                 <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             </action>
@@ -284,7 +284,7 @@
 
     <projectListeners>
         <!--SQL编辑器开启监听-->
-        <listener topic="com.intellij.openapi.fileEditor.FileEditorManagerListener" class="com.neueda.jetbrains.plugin.graphdb.jetbrains.ui.listeners.NebulaConsoleEditorFileListener"/>
+        <listener topic="com.intellij.openapi.fileEditor.FileEditorManagerListener" class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.listeners.NebulaConsoleEditorFileListener"/>
     </projectListeners>
 
 </idea-plugin>

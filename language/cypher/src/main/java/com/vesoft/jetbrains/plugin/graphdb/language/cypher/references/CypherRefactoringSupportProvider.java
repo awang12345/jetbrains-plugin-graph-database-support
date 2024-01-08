@@ -1,0 +1,26 @@
+package com.vesoft.jetbrains.plugin.graphdb.language.cypher.references;
+
+import com.intellij.lang.refactoring.RefactoringSupportProvider;
+import com.intellij.psi.PsiElement;
+import com.vesoft.jetbrains.plugin.graphdb.language.cypher.psi.CypherLabelName;
+import com.vesoft.jetbrains.plugin.graphdb.language.cypher.psi.CypherPropertyKeyName;
+import com.vesoft.jetbrains.plugin.graphdb.language.cypher.psi.CypherRelTypeName;
+import com.vesoft.jetbrains.plugin.graphdb.language.cypher.psi.CypherVariable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Inline refactoring support.
+ *
+ * @author dmitry@vrublevsky.me
+ */
+public class CypherRefactoringSupportProvider extends RefactoringSupportProvider {
+
+    @Override
+    public boolean isMemberInplaceRenameAvailable(@NotNull PsiElement element, @Nullable PsiElement context) {
+        return element instanceof CypherVariable
+                || element instanceof CypherLabelName
+                || element instanceof CypherRelTypeName
+                || element instanceof CypherPropertyKeyName;
+    }
+}
