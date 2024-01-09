@@ -20,6 +20,7 @@ ___
 - Manage data sources
 - Write and execute queries
 - Explore query results in table view
+- Explore query results in graph view
 - Supported databases:
   - Neo4j 3.4+ (Bolt)
   - Nebula 3.0+ (Thrift)
@@ -53,7 +54,7 @@ ___
 
 ## Supported Jetbrains Products
 ___
-* IntelliJ IDEA
+* IntelliJ Idea 2019.1+
 * RubyMine
 * WebStorm
 * PhpStorm
