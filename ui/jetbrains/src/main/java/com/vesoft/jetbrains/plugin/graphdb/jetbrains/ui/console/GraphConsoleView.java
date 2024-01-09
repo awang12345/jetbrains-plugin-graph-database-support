@@ -76,6 +76,7 @@ public class GraphConsoleView implements Disposable {
     private JPanel globalParametersTab;
     private JPanel fileSpecificParametersTab;
     private JBSplitter paramSplitter;
+    private JPanel tableTab;
 
     private LookAndFeelService lookAndFeelService;
 
@@ -122,7 +123,7 @@ public class GraphConsoleView implements Disposable {
                 .setText(Tabs.LOG));
             consoleTabs.addTab(new TabInfo(graphTab)
                 .setText(Tabs.GRAPH));
-            consoleTabs.addTab(new TabInfo(tableScrollPane)
+            consoleTabs.addTab(new TabInfo(tableTab)
                 .setText(Tabs.TABLE));
             consoleTabs.addTab(new TabInfo(parametersTab)
                 .setText(Tabs.PARAMETERS));
@@ -202,7 +203,7 @@ public class GraphConsoleView implements Disposable {
     private void initializeWidgets(Project project) {
         StatusBar statusBar = WindowManager.getInstance().getStatusBar(project);
         executionStatusBarWidget = new ExecutionStatusBarWidget(project.getMessageBus());
-        statusBar.addWidget(executionStatusBarWidget, "before Position");
+//        statusBar.addWidget(executionStatusBarWidget, "before Position");
     }
 
     private void createNewQueryPlanTab(String originalQuery,
@@ -270,5 +271,9 @@ public class GraphConsoleView implements Disposable {
 
     public JPanel getFileSpecificParametersTab() {
         return fileSpecificParametersTab;
+    }
+
+    public JPanel getTableTab() {
+        return tableTab;
     }
 }
