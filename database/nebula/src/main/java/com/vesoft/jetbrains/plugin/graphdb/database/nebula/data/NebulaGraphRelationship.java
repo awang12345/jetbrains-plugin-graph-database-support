@@ -3,6 +3,7 @@ package com.vesoft.jetbrains.plugin.graphdb.database.nebula.data;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphNode;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphPropertyContainer;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphRelationship;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.query.NebulaValueToString;
 import com.vesoft.nebula.client.graph.data.Relationship;
 import com.vesoft.nebula.client.graph.data.ValueWrapper;
 
@@ -22,6 +23,10 @@ public class NebulaGraphRelationship implements GraphRelationship {
 
     private Relationship relationship;
 
+    private GraphNode startNode;
+
+    private GraphNode endNode;
+
     public NebulaGraphRelationship(Relationship relationship) {
         this.relationship = relationship;
     }
@@ -38,7 +43,7 @@ public class NebulaGraphRelationship implements GraphRelationship {
                 HashMap<String, ValueWrapper> properties = relationship.properties();
                 Map<String, Object> map = new HashMap<>();
                 for (Map.Entry<String, ValueWrapper> entry : properties.entrySet()) {
-                    map.put(entry.getKey(), entry.getValue().getValue().getFieldValue());
+                    map.put(entry.getKey(), NebulaValueToString.valueToString(entry.getValue().getValue()));
                 }
                 return map;
             } catch (UnsupportedEncodingException e) {
@@ -74,16 +79,30 @@ public class NebulaGraphRelationship implements GraphRelationship {
 
     @Override
     public GraphNode getStartNode() {
+        if (this.startNode != null) {
+            return this.startNode;
+        }
         return new NebulaGraphNode(getStartNodeId());
     }
 
     @Override
     public GraphNode getEndNode() {
+        if (endNode != null) {
+            return endNode;
+        }
         return new NebulaGraphNode(getEndNodeId());
     }
 
     @Override
     public boolean isTypesSingle() {
         return false;
+    }
+
+    public void setStartNode(GraphNode startNode) {
+        this.startNode = startNode;
+    }
+
+    public void setEndNode(GraphNode endNode) {
+        this.endNode = endNode;
     }
 }

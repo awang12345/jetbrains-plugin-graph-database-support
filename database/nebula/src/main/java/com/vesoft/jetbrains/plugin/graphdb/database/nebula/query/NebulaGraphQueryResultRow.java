@@ -4,13 +4,16 @@ import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphNode;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphRelationship;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResultColumn;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResultRow;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphNode;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphRelationship;
+import com.vesoft.nebula.client.graph.data.Node;
+import com.vesoft.nebula.client.graph.data.Relationship;
 import com.vesoft.nebula.client.graph.data.ResultSet;
 import com.vesoft.nebula.client.graph.data.ValueWrapper;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class NebulaGraphQueryResultRow implements GraphQueryResultRow {
@@ -31,23 +34,63 @@ public class NebulaGraphQueryResultRow implements GraphQueryResultRow {
             if (wrapper.isNull()) {
                 return "NULL";
             }
-            return String.valueOf(wrapper.getValue().getFieldValue());
+            return NebulaValueToString.valueToString(wrapper.getValue());
         } catch (Exception ex) {
             return "Parse error:" + ex.getMessage();
         }
     }
 
+
     @Override
     public List<GraphNode> getNodes() {
-        return new ArrayList<>();
+        List<GraphNode> graphNodeList = new ArrayList<>();
+        for (ValueWrapper value : record.values()) {
+            addNode(graphNodeList, value);
+        }
+        return graphNodeList;
+    }
+
+    private static void addNode(List<GraphNode> graphNodeList, ValueWrapper value) {
+        if (value.isEdge()) {
+            Relationship relationship = value.asRelationship();
+            graphNodeList.add(new NebulaGraphNode(NebulaValueToString.getVidString(relationship.srcId().getValue())));
+            graphNodeList.add(new NebulaGraphNode(NebulaValueToString.getVidString(relationship.dstId().getValue())));
+        } else if (value.isPath()) {
+            try {
+                List<Node> nodes = value.asPath().getNodes();
+                nodes.stream().map(NebulaGraphNode::new).forEach(graphNodeList::add);
+            } catch (UnsupportedEncodingException e) {
+            }
+        } else if (value.isVertex()) {
+            graphNodeList.add(new NebulaGraphNode(value.getValue().getVVal()));
+        } else if (value.isList()) {
+            value.asList().forEach(v -> addNode(graphNodeList, v));
+        } else if (value.isSet()) {
+            value.asSet().forEach(v -> addNode(graphNodeList, v));
+        }
     }
 
     @Override
     public List<GraphRelationship> getRelationships() {
-        return record.values().stream()
-                .filter(ValueWrapper::isEdge)
-                .map(ValueWrapper::asRelationship)
-                .map(NebulaGraphRelationship::new)
-                .collect(Collectors.toList());
+        List<GraphRelationship> graphRelationshipList = new ArrayList<>();
+        for (ValueWrapper valueWrapper : record.values()) {
+            addRelationShip(graphRelationshipList, valueWrapper);
+        }
+        return graphRelationshipList;
+    }
+
+    private static void addRelationShip(List<GraphRelationship> graphRelationshipList, ValueWrapper valueWrapper) {
+        if (valueWrapper.isPath()) {
+            try {
+                valueWrapper.asPath().getRelationships().stream().map(NebulaGraphRelationship::new).forEach(graphRelationshipList::add);
+            } catch (UnsupportedEncodingException e) {
+            }
+        } else if (valueWrapper.isEdge()) {
+            graphRelationshipList.add(new NebulaGraphRelationship(valueWrapper.asRelationship()));
+        } else if (valueWrapper.isList()) {
+            valueWrapper.asList().forEach(value -> addRelationShip(graphRelationshipList, value));
+        } else if (valueWrapper.isSet()) {
+            valueWrapper.asSet().forEach(value -> addRelationShip(graphRelationshipList, value));
+        }
     }
 }

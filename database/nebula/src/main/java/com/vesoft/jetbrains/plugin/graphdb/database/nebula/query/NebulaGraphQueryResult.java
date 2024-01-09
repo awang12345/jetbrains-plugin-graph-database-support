@@ -3,13 +3,12 @@ package com.vesoft.jetbrains.plugin.graphdb.database.nebula.query;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphNode;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphRelationship;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.query.*;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphRelationship;
 import com.vesoft.nebula.client.graph.data.ResultSet;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -25,10 +24,57 @@ public class NebulaGraphQueryResult implements GraphQueryResult {
     private ResultSet resultSet;
     private Exception exception;
 
+    private Map<String, GraphNode> nodeMap = new HashMap<>();
+
+    private List<GraphRelationship> relationshipList = new ArrayList<>();
+
+    private List<GraphQueryResultRow> rowList;
+
+    private List<GraphQueryResultColumn> queryResultColumns;
+
     public NebulaGraphQueryResult(long startTime, ResultSet resultSet, Exception exception) {
         this.costTime = System.currentTimeMillis() - startTime;
         this.resultSet = resultSet;
         this.exception = exception;
+
+        this.rowList = IntStream.range(0, this.resultSet.rowsSize())
+                .mapToObj(this.resultSet::rowValues)
+                .map(NebulaGraphQueryResultRow::new)
+                .collect(Collectors.toList());
+
+        this.queryResultColumns = this.resultSet.getColumnNames().stream().map(NebulaGraphQueryResultColumn::new).collect(Collectors.toList());
+
+        initNode();
+        initRelationShip();
+    }
+
+    private void initNode() {
+        for (GraphQueryResultRow resultRow : this.rowList) {
+            List<GraphNode> nodes = resultRow.getNodes();
+            if (nodes != null) {
+                nodes.forEach(node -> {
+                    GraphNode graphNode = nodeMap.get(node.getId());
+                    if (graphNode == null) {
+                        nodeMap.put(node.getId(), node);
+                    } else {
+                        Map<String, Object> properties = graphNode.getPropertyContainer().getProperties();
+                        if (properties == null || properties.isEmpty()) {
+                            nodeMap.put(node.getId(), node);
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    private void initRelationShip() {
+        this.relationshipList = this.rowList.stream().map(GraphQueryResultRow::getRelationships).flatMap(List::stream)
+                .peek(graphRelationship -> {
+                    GraphNode startNode = nodeMap.get(graphRelationship.getStartNodeId());
+                    Optional.ofNullable(startNode).ifPresent(((NebulaGraphRelationship) graphRelationship)::setStartNode);
+                    GraphNode endNode = nodeMap.get(graphRelationship.getEndNodeId());
+                    Optional.ofNullable(endNode).ifPresent(((NebulaGraphRelationship) graphRelationship)::setEndNode);
+                }).collect(Collectors.toList());
     }
 
     @Override
@@ -48,25 +94,22 @@ public class NebulaGraphQueryResult implements GraphQueryResult {
 
     @Override
     public List<GraphQueryResultColumn> getColumns() {
-        return this.resultSet.getColumnNames().stream().map(NebulaGraphQueryResultColumn::new).collect(Collectors.toList());
+        return this.queryResultColumns;
     }
 
     @Override
     public List<GraphQueryResultRow> getRows() {
-        return IntStream.range(0, this.resultSet.rowsSize())
-                .mapToObj(this.resultSet::rowValues)
-                .map(NebulaGraphQueryResultRow::new)
-                .collect(Collectors.toList());
+        return this.rowList;
     }
 
     @Override
     public List<GraphNode> getNodes() {
-        return Collections.emptyList();
+        return new ArrayList<>(this.nodeMap.values());
     }
 
     @Override
     public List<GraphRelationship> getRelationships() {
-        return getRows().stream().map(GraphQueryResultRow::getRelationships).flatMap(List::stream).collect(Collectors.toList());
+        return this.relationshipList;
     }
 
     @Override

@@ -2,7 +2,15 @@ package com.vesoft.jetbrains.plugin.graphdb.database.nebula.data;
 
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphNode;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphPropertyContainer;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.query.NebulaValueToString;
+import com.vesoft.nebula.Tag;
+import com.vesoft.nebula.Value;
+import com.vesoft.nebula.Vertex;
+import com.vesoft.nebula.client.graph.data.Node;
+import com.vesoft.nebula.client.graph.data.ValueWrapper;
+import org.apache.commons.lang.StringUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -28,6 +36,43 @@ public class NebulaGraphNode implements GraphNode {
         this.properties = properties;
     }
 
+    public NebulaGraphNode(Node node) {
+        this.id = NebulaValueToString.getVidString(node.getId().getValue());
+        if (!node.tagNames().isEmpty()) {
+            this.name = node.tagNames().get(0);
+            try {
+                HashMap<String, ValueWrapper> prop = node.properties(this.name);
+                if (prop != null) {
+                    this.properties = new HashMap<>();
+                    for (Map.Entry<String, ValueWrapper> entry : prop.entrySet()) {
+                        String key = entry.getKey();
+                        String value = NebulaValueToString.valueToString(entry.getValue().getValue());
+                        this.properties.put(key, value);
+                    }
+                }
+            } catch (UnsupportedEncodingException e) {
+                ;
+            }
+        }
+    }
+
+    public NebulaGraphNode(Vertex vertex) {
+        this.id = NebulaValueToString.getVidString(vertex.getVid());
+        if (!vertex.getTags().isEmpty()) {
+            Tag tag = vertex.getTags().get(0);
+            this.name = StringUtils.defaultIfBlank(new String(tag.getName()), this.id);
+            this.properties = new HashMap<>();
+            if (tag.getProps() != null) {
+                for (Map.Entry<byte[], Value> entry : tag.getProps().entrySet()) {
+                    String key = new String(entry.getKey());
+                    String value = NebulaValueToString.valueToString(entry.getValue());
+                    this.properties.put(key, value);
+                }
+            }
+        }
+    }
+
+
     @Override
     public String getId() {
         return this.id;
@@ -52,4 +97,24 @@ public class NebulaGraphNode implements GraphNode {
     public boolean isTypesSingle() {
         return false;
     }
+
+    @Override
+    public String getRepresentation() {
+        return StringUtils.defaultIfBlank(this.name, this.id);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NebulaGraphNode that = (NebulaGraphNode) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+
 }
