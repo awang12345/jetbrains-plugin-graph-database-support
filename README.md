@@ -42,8 +42,8 @@ ___
 ## How To Use
 ___
 1. Install the plugin
-   * Search "Nebula Graph" from the [Jetbrains Plugin Marketing](https://plugins.jetbrains.com/plugin/23459-nebula-graph-database-support) .
-   * Download plugin file from the [release](https://github.com/nebula-contrib/nebula-console-intellij-plugin/releases) and install it manually.
+   * Search "Nebula Graph" from the [Jetbrains Plugin Marketing](https://plugins.jetbrains.com/plugin/23470) .
+   * Download the latest version of the plugin file from the [release](https://github.com/nebula-contrib/nebula-console-intellij-plugin/releases) and install it manually.
 2. In the sidebar toolwindow of idea IDE find "![database_setting.svg](docs%2Ficons%2Fdatabase_setting.svg)"  menu
 3. Click "+" button to add a graph database config and verify that the connection is valid.
 4. Click "![refresh.svg](docs%2Ficons%2Frefresh.svg)" button to refresh the database metadata.
