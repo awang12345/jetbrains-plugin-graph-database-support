@@ -31,10 +31,13 @@ public class NebulaValueToString {
                 return listToString(value.getLVal());
             case Value.DVAL:
                 Date dVal = value.getDVal();
-                return dVal.getYear() + "-" + dVal.getMonth() + "-" + dVal.getDay();
+                return String.format("%d-%02d-%02d", dVal.getYear(), dVal.getMonth(), dVal.getDay());
             case Value.TVAL:
                 Time tVal = value.getTVal();
-                return tVal.getHour() + ":" + tVal.getMinute() + ":" + tVal.getSec();
+                return String.format("%02d:%02d:%02d", tVal.getHour(), tVal.getMinute(), tVal.getSec());
+            case Value.DTVAL:
+                DateTime dtVal = value.getDtVal();
+                return String.format("%d-%02d-%02d %02d:%02d:%02d", dtVal.getYear(), dtVal.getMonth(), dtVal.getDay(), dtVal.getHour(), dtVal.getMinute(), dtVal.getSec());
             case Value.VVAL:
                 return vertexToString(value.getVVal());
             default:

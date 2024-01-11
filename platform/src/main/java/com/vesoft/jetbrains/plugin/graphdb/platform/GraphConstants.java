@@ -8,7 +8,7 @@ public final class GraphConstants {
     public static final String PLUGIN_ID = "com.vesoft.intellij.plugin.nebula";
 
     public static class ToolWindow {
-        public static final String CONSOLE_TOOL_WINDOW = "Nebula Graph Database Console";
+        public static final String CONSOLE_TOOL_WINDOW = "Graph Database Console";
 
         public static class Tabs {
             public static final String LOG = "Log";

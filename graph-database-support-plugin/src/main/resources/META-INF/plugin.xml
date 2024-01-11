@@ -274,10 +274,18 @@
             </action>
 
             <action id="NebulaGraph.Actions.SQLExecute"
-                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.ExecuteConsoleEditorSQLAction"
-                    text="Execute select nGQL" icon="/graphdb/icons/nodes/StatementExecution.png">
+                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryAction"
+                    text="Execute select nGQL"
+                    icon="/graphdb/icons/nodes/StatementExecution.png"
+                    description="Execute query">
                 <add-to-group group-id="EditorPopupMenu" anchor="first"/>
             </action>
+
+<!--            <action id="NebulaGraph.Actions.SQLExecute"-->
+<!--                    class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.ExecuteConsoleEditorSQLAction"-->
+<!--                    text="Execute select nGQL" icon="/graphdb/icons/nodes/StatementExecution.png">-->
+<!--                <add-to-group group-id="EditorPopupMenu" anchor="first"/>-->
+<!--            </action>-->
 
         </group>
     </actions>
