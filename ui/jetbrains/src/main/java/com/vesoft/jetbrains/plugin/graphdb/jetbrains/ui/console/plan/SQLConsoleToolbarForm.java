@@ -1,9 +1,7 @@
 package com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan;
 
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.actionSystem.ActionManager;
-import com.intellij.openapi.actionSystem.ActionToolbar;
-import com.intellij.openapi.actionSystem.DefaultActionGroup;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
@@ -34,6 +32,9 @@ public class SQLConsoleToolbarForm implements Disposable {
 
         JLabel tipsLabel = new JLabel("Ctrl + Enter  - Execute select nGQL");
         actionsPanel.add(tipsLabel);
+
+        
+
     }
 
     @NotNull

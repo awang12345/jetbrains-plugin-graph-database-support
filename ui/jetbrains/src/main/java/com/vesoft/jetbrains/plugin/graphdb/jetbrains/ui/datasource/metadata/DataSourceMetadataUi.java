@@ -12,7 +12,6 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metada
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.Neo4jBoltCypherDataSourceMetadata;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.*;
-import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.*;
 import icons.GraphIcons;
 import org.jetbrains.annotations.NotNull;
 
@@ -227,7 +226,7 @@ public class DataSourceMetadataUi {
             for (NebulaEdge nebulaEdge : nebulaSpace.getEdgeList()) {
                 PatchedDefaultMutableTreeNode edgeTreeNode
                         = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.EDGE, dataSourceApi,
-                        nebulaEdge.getTagName(), GraphIcons.Nodes.NEBULA_EDGE, nebulaEdge));
+                        nebulaEdge.getEdgeName(), GraphIcons.Nodes.NEBULA_EDGE, nebulaEdge));
                 if (nebulaEdge.getProperties() != null && !nebulaEdge.getProperties().isEmpty()) {
                     for (Map.Entry<String, String> entry : nebulaEdge.getProperties().entrySet()) {
                         PatchedDefaultMutableTreeNode propTreeNode = new PatchedDefaultMutableTreeNode(

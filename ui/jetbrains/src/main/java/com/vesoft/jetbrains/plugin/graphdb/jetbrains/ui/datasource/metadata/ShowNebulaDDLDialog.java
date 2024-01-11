@@ -2,8 +2,11 @@ package com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata;
 
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.EditorSettings;
+import com.intellij.openapi.editor.impl.softwrap.SoftWrapAppliancePlaces;
 import com.intellij.openapi.project.Project;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaEdge;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaSchema;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaTag;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.EditorComponentUtils;
@@ -20,9 +23,9 @@ public class ShowNebulaDDLDialog extends JDialog {
 
     private final Project project;
 
-    private final Object data;
+    private final NebulaSchema data;
 
-    public ShowNebulaDDLDialog(Project project, Object data) {
+    public ShowNebulaDDLDialog(Project project, NebulaSchema data) {
         this.data = data;
         this.project = project;
 
@@ -33,6 +36,7 @@ public class ShowNebulaDDLDialog extends JDialog {
         initDDLPanel();
 
         initSize();
+        this.setLocationRelativeTo(null);
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -57,27 +61,19 @@ public class ShowNebulaDDLDialog extends JDialog {
     }
 
     private void initSize() {
-        JPanelUtils.setSize(this, new Dimension(1000, 600));
+        JPanelUtils.setSize(this, new Dimension(800, 600));
     }
 
     private void initDDLPanel() {
         contentPane.setLayout(new BorderLayout());
         Editor editor = EditorComponentUtils.createEditorPanel(project, EditorComponentUtils.LightVirtualType.SQL);
+        editor.getSettings().setUseSoftWraps(true);
         JComponent component = editor.getComponent();
-        component.setSize(1000, 600);
+        component.setSize(800, 600);
         contentPane.add(component, BorderLayout.CENTER);
 
-        String ddl = null;
-        if (data instanceof NebulaSpace) {
-            ddl = ((NebulaSpace) data).getDdl();
-            contentPane.setName(((NebulaSpace) data).getSpaceName());
-        } else if (data instanceof NebulaTag) {
-            ddl = ((NebulaTag) data).getDdl();
-            contentPane.setName(((NebulaTag) data).getTagName());
-        } else if (data instanceof NebulaEdge) {
-            ddl = ((NebulaEdge) data).getDdl();
-            contentPane.setName(((NebulaEdge) data).getTagName());
-        }
+
+        String ddl = data.getDdl();
         final String scheme = ddl;
         WriteCommandAction.runWriteCommandAction(project, () -> {
             editor.getDocument().setText(scheme);

@@ -120,7 +120,7 @@ public class NGqlCompletionContributor extends CompletionContributor {
             List<NebulaEdge> edgeList = nebulaSpace.getEdgeList();
             if (edgeList != null) {
                 for (NebulaEdge nebulaEdge : edgeList) {
-                    addElement(result, nebulaEdge.getTagName(), GraphIcons.Nodes.NEBULA_EDGE, "Tag");
+                    addElement(result, nebulaEdge.getEdgeName(), GraphIcons.Nodes.NEBULA_EDGE, "Edge");
 
                     if (nebulaEdge.getProperties() != null) {
                         for (String prop : nebulaEdge.getProperties().keySet()) {

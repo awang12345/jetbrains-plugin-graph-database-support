@@ -32,7 +32,7 @@ public class MetadataContextMenu implements ContextMenu {
     public void showPopup(DataContext dataContext) {
         ListPopup popup = JBPopupFactory.getInstance().createActionGroupPopup(
                 data,
-                new MetadataActionGroup(metadataType, data, dataSourceApi.getUUID(), extData),
+                new MetadataActionGroup(metadataType, data, dataSourceApi, extData),
                 dataContext,
                 JBPopupFactory.ActionSelectionAid.MNEMONICS,
                 true

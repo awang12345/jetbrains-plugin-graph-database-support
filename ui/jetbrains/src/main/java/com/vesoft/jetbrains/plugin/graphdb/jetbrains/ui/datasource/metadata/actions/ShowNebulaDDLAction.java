@@ -2,6 +2,7 @@ package com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.act
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaSchema;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.ShowNebulaDDLDialog;
 import icons.GraphIcons;
 import org.jetbrains.annotations.NotNull;
@@ -14,15 +15,15 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ShowNebulaDDLAction extends AnAction {
 
-    private Object data;
+    private NebulaSchema schema;
 
-    public ShowNebulaDDLAction(Object data) {
+    public ShowNebulaDDLAction(NebulaSchema data) {
         super("show ddl", "show ddl", GraphIcons.scaleToWidth(GraphIcons.Nodes.DDL, 16));
-        this.data = data;
+        this.schema = data;
     }
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
-        new ShowNebulaDDLDialog(e.getProject(), data).setVisible(true);
+        new ShowNebulaDDLDialog(e.getProject(), schema).setVisible(true);
     }
 }

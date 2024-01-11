@@ -8,30 +8,20 @@ import java.util.List;
  * @Author jiangyiwang-jk
  * @Date 2023/12/29 16:45
  */
-public class NebulaSpace {
+public class NebulaSpace extends NebulaSchema {
 
-    private String spaceName;
     private String type;
 
     private List<NebulaEdge> edgeList;
     private List<NebulaTag> tagList;
 
-    private String ddl;
 
-    public NebulaSpace(String spaceName, List<NebulaEdge> edgeList, List<NebulaTag> tagList,String ddl) {
-        this.spaceName = spaceName;
+    public NebulaSpace(String spaceName, List<NebulaEdge> edgeList, List<NebulaTag> tagList, String ddl) {
+        super(spaceName, ddl);
         this.edgeList = edgeList;
         this.tagList = tagList;
-        this.ddl = ddl;
     }
 
-    public String getSpaceName() {
-        return spaceName;
-    }
-
-    public void setSpaceName(String spaceName) {
-        this.spaceName = spaceName;
-    }
 
     public String getType() {
         return type;
@@ -57,7 +47,4 @@ public class NebulaSpace {
         this.tagList = tagList;
     }
 
-    public String getDdl() {
-        return ddl;
-    }
 }

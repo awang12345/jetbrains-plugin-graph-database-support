@@ -8,29 +8,26 @@ import java.util.Map;
  * @Author jiangyiwang-jk
  * @Date 2023/12/29 16:46
  */
-public class NebulaEdge {
+public class NebulaEdge extends NebulaSchema {
 
-    private String tagName;
+
+    private String edgeName;
 
     private Map<String, String> properties;
 
-    private String ddl;
 
-    public NebulaEdge(String tagName, Map<String, String> properties,String ddl) {
-        this.tagName = tagName;
+    public NebulaEdge(String spaceName, String edgeName, Map<String, String> properties, String ddl) {
+        super(spaceName, ddl);
+        this.edgeName = edgeName;
         this.properties = properties;
-        this.ddl = ddl;
     }
 
-    public String getTagName() {
-        return tagName;
+    public String getEdgeName() {
+        return edgeName;
     }
 
     public Map<String, String> getProperties() {
         return properties;
     }
 
-    public String getDdl() {
-        return ddl;
-    }
 }

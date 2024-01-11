@@ -84,10 +84,10 @@ public class NebulaDatabase implements GraphDatabaseApi {
                     throw new RuntimeException("Nebula nGQL execute fail !" + resultSet.getErrorMessage());
                 }
                 if (resultSet.rowsSize() == 0) {
-                    return new NebulaGraphMetadata(Collections.emptyList());
+                    return new NebulaGraphMetadata(resultSet.getSpaceName(), Collections.emptyList());
                 }
                 List<NebulaSpace> spaces = querySpaceList(sessionPool, resultSet);
-                return new NebulaGraphMetadata(spaces);
+                return new NebulaGraphMetadata(resultSet.getSpaceName(), spaces);
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
@@ -104,8 +104,8 @@ public class NebulaDatabase implements GraphDatabaseApi {
             String useSpace = String.format(Consts.Stetments.USE_SPACE, spaceName);
             sessionPool.execute(useSpace);
 
-            List<NebulaEdge> edgeList = querySpaceEdgeList(sessionPool);
-            List<NebulaTag> tagList = querySpaceTagList(sessionPool);
+            List<NebulaEdge> edgeList = querySpaceEdgeList(spaceName, sessionPool);
+            List<NebulaTag> tagList = querySpaceTagList(spaceName, sessionPool);
 
             String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_SPACE, spaceName));
 
@@ -115,7 +115,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
         return spaces;
     }
 
-    private List<NebulaEdge> querySpaceEdgeList(SessionPool sessionPool) throws Exception {
+    private List<NebulaEdge> querySpaceEdgeList(String spaceName, SessionPool sessionPool) throws Exception {
         String useSpace = String.format(Consts.Stetments.SHOW_EDGES);
         ResultSet resultSet = sessionPool.execute(useSpace);
         List<NebulaEdge> edgeList = new ArrayList<>();
@@ -126,12 +126,12 @@ public class NebulaDatabase implements GraphDatabaseApi {
 
             String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_EDGE, edgeName));
 
-            edgeList.add(new NebulaEdge(edgeName, prop, ddl));
+            edgeList.add(new NebulaEdge(spaceName, edgeName, prop, ddl));
         }
         return edgeList;
     }
 
-    private List<NebulaTag> querySpaceTagList(SessionPool sessionPool) throws Exception {
+    private List<NebulaTag> querySpaceTagList(String spaceName, SessionPool sessionPool) throws Exception {
         String useSpace = String.format(Consts.Stetments.SHOW_TAGS);
         ResultSet resultSet = sessionPool.execute(useSpace);
         List<NebulaTag> tagList = new ArrayList<>();
@@ -139,10 +139,8 @@ public class NebulaDatabase implements GraphDatabaseApi {
             ResultSet.Record valueWrappers = resultSet.rowValues(i);
             String tagName = valueWrappers.get(0).asString();
             Map<String, String> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_TAG, tagName));
-
             String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_TAG, tagName));
-
-            tagList.add(new NebulaTag(tagName, prop, ddl));
+            tagList.add(new NebulaTag(spaceName, tagName, prop, ddl));
         }
         return tagList;
     }

@@ -15,7 +15,10 @@ public class NebulaGraphMetadata implements GraphMetadata {
 
     private List<NebulaSpace> nebulaSpaceList;
 
-    public NebulaGraphMetadata(List<NebulaSpace> nebulaSpaceList) {
+    private String currentSpace;
+
+    public NebulaGraphMetadata(String currentSpace,List<NebulaSpace> nebulaSpaceList) {
+        this.currentSpace = currentSpace;
         this.nebulaSpaceList = nebulaSpaceList;
     }
 
@@ -41,5 +44,9 @@ public class NebulaGraphMetadata implements GraphMetadata {
     @Override
     public Iterable<String> edgeProperties() {
         return null;
+    }
+
+    public String getCurrentSpace() {
+        return currentSpace;
     }
 }

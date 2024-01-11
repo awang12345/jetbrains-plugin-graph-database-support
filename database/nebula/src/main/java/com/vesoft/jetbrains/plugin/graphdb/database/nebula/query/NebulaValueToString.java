@@ -13,13 +13,15 @@ import java.util.stream.Collectors;
  */
 public class NebulaValueToString {
 
+    public static final String NULL_VALUE = "[NULL]";
+
     public static String valueToString(Value value) {
         return getValueString(value);
     }
 
     private static String getValueString(Value value) {
         if (value == null || value.getFieldValue() == null) {
-            return "[NULL]";
+            return NULL_VALUE;
         }
         int setField = value.getSetField();
         switch (setField) {
@@ -40,6 +42,8 @@ public class NebulaValueToString {
                 return String.format("%d-%02d-%02d %02d:%02d:%02d", dtVal.getYear(), dtVal.getMonth(), dtVal.getDay(), dtVal.getHour(), dtVal.getMinute(), dtVal.getSec());
             case Value.VVAL:
                 return vertexToString(value.getVVal());
+            case Value.MVAL:
+                return mapToString(value.getMVal());
             default:
                 return String.valueOf(value.getFieldValue());
         }
@@ -105,9 +109,36 @@ public class NebulaValueToString {
 
     private static String listToString(NList nList) {
         if (nList == null) {
-            return null;
+            return NULL_VALUE;
         }
         return nList.values.stream().map(NebulaValueToString::getValueString).collect(Collectors.joining(","));
+    }
+
+    private static String mapToString(NMap nMap) {
+        if (nMap == null) {
+            return NULL_VALUE;
+        }
+        if (nMap.getKvs().isEmpty()) {
+            return "{}";
+        }
+        StringBuilder builder = new StringBuilder("{");
+        for (Map.Entry<byte[], Value> entry : nMap.getKvs().entrySet()) {
+            builder.append(new String(entry.getKey())).append(": ").append(getMapValue(entry.getValue())).append(",");
+        }
+        builder.delete(builder.length() - 1, builder.length());
+        builder.append("}");
+        return builder.toString();
+    }
+
+    public static String getMapValue(Value value) {
+        String valueString = getValueString(value);
+        if (value.getSetField() == Value.IVAL
+                || value.getSetField() == Value.FVAL
+                || value.getSetField() == Value.DVAL
+                || value.getSetField() == Value.NVAL) {
+            return valueString;
+        }
+        return "\"" + valueString + "\"";
     }
 
 //    private static String pathToString(Path path) {

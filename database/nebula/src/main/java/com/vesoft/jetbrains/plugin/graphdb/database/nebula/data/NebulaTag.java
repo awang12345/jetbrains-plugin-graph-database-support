@@ -8,18 +8,18 @@ import java.util.Map;
  * @Author jiangyiwang-jk
  * @Date 2023/12/29 16:46
  */
-public class NebulaTag {
+public class NebulaTag extends NebulaSchema {
+
 
     private String tagName;
 
     private Map<String, String> properties;
 
-    private String ddl;
 
-    public NebulaTag(String tagName, Map<String, String> properties, String ddl) {
+    public NebulaTag(String space, String tagName, Map<String, String> properties, String ddl) {
+        super(space, ddl);
         this.tagName = tagName;
         this.properties = properties;
-        this.ddl = ddl;
     }
 
     public String getTagName() {
@@ -30,7 +30,4 @@ public class NebulaTag {
         return properties;
     }
 
-    public String getDdl() {
-        return this.ddl;
-    }
 }

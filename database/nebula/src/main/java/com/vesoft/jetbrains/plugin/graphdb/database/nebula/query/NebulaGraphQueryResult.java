@@ -32,10 +32,13 @@ public class NebulaGraphQueryResult implements GraphQueryResult {
 
     private List<GraphQueryResultColumn> queryResultColumns;
 
+    private String currentSpace;
+
     public NebulaGraphQueryResult(long startTime, ResultSet resultSet, Exception exception) {
         this.costTime = System.currentTimeMillis() - startTime;
         this.resultSet = resultSet;
         this.exception = exception;
+        this.currentSpace = resultSet.getSpaceName();
 
         this.rowList = IntStream.range(0, this.resultSet.rowsSize())
                 .mapToObj(this.resultSet::rowValues)
@@ -130,5 +133,9 @@ public class NebulaGraphQueryResult implements GraphQueryResult {
     @Override
     public Optional<GraphQueryPlan> getPlan() {
         return Optional.empty();
+    }
+
+    public String getCurrentSpace() {
+        return currentSpace;
     }
 }

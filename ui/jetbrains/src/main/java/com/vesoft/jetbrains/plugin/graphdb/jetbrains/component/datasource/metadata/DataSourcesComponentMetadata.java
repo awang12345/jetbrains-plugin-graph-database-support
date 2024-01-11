@@ -237,7 +237,7 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
             List<NebulaEdge> edgeList = nebulaSpace.getEdgeList();
             if (edgeList != null) {
                 edgeList.forEach(edge -> {
-                    container.addNebulaLabel(edge.getTagName());
+                    container.addNebulaLabel(edge.getEdgeName());
                     Map<String, String> properties = edge.getProperties();
                     if (properties != null) {
                         properties.keySet().forEach(container::addNebulaLabel);

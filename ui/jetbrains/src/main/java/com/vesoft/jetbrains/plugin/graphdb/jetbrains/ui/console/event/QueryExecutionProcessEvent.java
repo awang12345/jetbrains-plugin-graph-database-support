@@ -10,13 +10,13 @@ public interface QueryExecutionProcessEvent {
     Topic<QueryExecutionProcessEvent> QUERY_EXECUTION_PROCESS_TOPIC =
             Topic.create("GraphDatabaseConsole.QueryExecutionProcessTopic", QueryExecutionProcessEvent.class);
 
-    void executionStarted(DataSourceApi dataSource, ExecuteQueryPayload payload);
+    default void executionStarted(DataSourceApi dataSource, ExecuteQueryPayload payload){};
 
-    void resultReceived(ExecuteQueryPayload payload, GraphQueryResult result);
+    default void resultReceived(ExecuteQueryPayload payload, GraphQueryResult result){};
 
-    void postResultReceived(ExecuteQueryPayload payload);
+    default void postResultReceived(ExecuteQueryPayload payload){};
 
-    void handleError(ExecuteQueryPayload payload, Exception exception);
+    default void handleError(ExecuteQueryPayload payload, Exception exception){};
 
-    void executionCompleted(ExecuteQueryPayload payload);
+    default void executionCompleted(ExecuteQueryPayload payload){};
 }

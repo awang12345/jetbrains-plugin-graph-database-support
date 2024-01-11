@@ -5,11 +5,14 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.SQLConsoleSpaceSelectAction;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.SQLConsoleToolbarForm;
 import com.vesoft.jetbrains.plugin.graphdb.language.ngql.NGqlFileType;
 import com.vesoft.jetbrains.plugin.graphdb.platform.GraphConstants;
+import org.jdesktop.swingx.action.ActionManager;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.Objects;
 
 /**
@@ -32,6 +35,8 @@ public class NebulaConsoleEditorFileListener implements FileEditorManagerListene
             // 追加顶部操作工具栏
             SQLConsoleToolbarForm toolbarForm = new SQLConsoleToolbarForm(project, fileEditor);
             source.addTopComponent(fileEditor, toolbarForm.getMainComponent());
+
+
         }
     }
 

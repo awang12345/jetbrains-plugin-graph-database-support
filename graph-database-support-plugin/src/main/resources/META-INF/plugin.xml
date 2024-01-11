@@ -268,7 +268,7 @@
 
         <!--SQL编辑器相关-->
         <group id="NebulaGraph.ActionGroup.SQLFileEditor" text="File Editor Controls">
-            <action id="NebulaGraph.Actions.CurrentSchema"
+            <action id="NebulaGraph.Actions.CurrentSpace"
                     class="com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan.SQLConsoleSpaceSelectAction"
                     text="--Space--">
             </action>

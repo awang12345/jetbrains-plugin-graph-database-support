@@ -25,12 +25,12 @@ public class DataContext {
         return project.getService(DataContext.class);
     }
 
-    public String getCurrentSpace(String fileName) {
-        return currentSpace.get(fileName);
+    public String getCurrentSpace(DataSourceApi dataSourceApi) {
+        return currentSpace.get(dataSourceApi.getUUID());
     }
 
-    public void setCurrentSpace(String fileName, String currentSpace) {
-        this.currentSpace.put(fileName, currentSpace);
+    public void setCurrentSpace(DataSourceApi dataSourceApi, String currentSpace) {
+        this.currentSpace.put(dataSourceApi.getUUID(), currentSpace);
     }
 
     public DataSourceMetadata getMetadata(DataSourceApi dataSourceApi) {
