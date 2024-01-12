@@ -159,6 +159,9 @@ public class NebulaDatabase implements GraphDatabaseApi {
 
     private String getDDL(SessionPool sessionPool, String sql) throws Exception {
         ResultSet resultSet = sessionPool.execute(sql);
+        if (resultSet.rowsSize() == 0) {
+            return "[ERROR]Get ddl statement failed from nebula.The query nGQL is " + sql;
+        }
         ResultSet.Record valueWrappers = resultSet.rowValues(0);
         return valueWrappers.get(1).asString();
     }
