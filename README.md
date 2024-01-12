@@ -1,6 +1,8 @@
 # [Nebula Graph Database support](https://github.com/awang12345/nebula-console-for-idea)
 [![Build Status](https://travis-ci.org/awang12345/nebula-console-for-idea.svg?branch=master)](https://travis-ci.org/awang12345/nebula-console-for-idea)
 
+ #English</a> | <a href="README-CN.md">#中文</a>
+
 ## Plugin for [IntelliJ IDEA](http://plugins.jetbrains.com/plugin/6317-lombok-plugin) to support [Nebula-Console](https://docs.nebula-graph.com.cn/3.6.0/nebula-console/).
 ___
 - Provides support for console to manage nebula data with IntelliJ IDEA.
