@@ -46,6 +46,7 @@ public class DataSourcesView implements Disposable {
     private Tree dataSourceTree;
     private ToolbarDecorator decorator;
     private DataSourceMetadataUi dataSourceMetadataUi;
+    private Project project;
 
     public DataSourcesView() {
         initialized = false;
@@ -53,6 +54,7 @@ public class DataSourcesView implements Disposable {
 
     public void initToolWindow(Project project, ToolWindow toolWindow) {
         if (!initialized) {
+            this.project = project;
             ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
             Content content = contentFactory.createContent(toolWindowContent, "", false);
             toolWindow.getContentManager().addContent(content);
@@ -108,7 +110,7 @@ public class DataSourcesView implements Disposable {
         dataSourceTree.setModel(treeModel);
         dataSourceTree.setRootVisible(false);
         dataSourceTree.setToggleClickCount(0);
-        dataSourceTree.addMouseListener(new TreeMouseAdapter());
+        dataSourceTree.addMouseListener(new TreeMouseAdapter(project));
     }
 
     private void decorateDataSourceTree() {

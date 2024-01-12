@@ -5,7 +5,11 @@ import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.context.DataContext;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.helpers.DataSourceHelper;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.helpers.LogHelper;
 import icons.GraphIcons;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -33,8 +37,14 @@ public class SQLConsoleToolbarForm implements Disposable {
         JLabel tipsLabel = new JLabel("Ctrl + Enter  - Execute select nGQL");
         actionsPanel.add(tipsLabel);
 
-        
-
+        DataSourceHelper.getDataSourceApi(fileEditor.getFile().getName(), project).ifPresent(dataSourceApi -> {
+            SQLConsoleSpaceSelectAction spaceSelectAction =
+                    (SQLConsoleSpaceSelectAction) actionManager.getAction(SQLConsoleSpaceSelectAction.ID);
+            String currentSpace = DataContext.getInstance(project).getCurrentSpace(dataSourceApi);
+            if (StringUtils.isNotBlank(currentSpace)) {
+                spaceSelectAction.getTemplatePresentation().setText(currentSpace, false);
+            }
+        });
     }
 
     @NotNull

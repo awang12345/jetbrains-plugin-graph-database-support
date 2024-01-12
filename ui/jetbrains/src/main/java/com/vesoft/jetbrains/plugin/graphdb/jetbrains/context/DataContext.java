@@ -2,6 +2,7 @@ package com.vesoft.jetbrains.plugin.graphdb.jetbrains.context;
 
 import com.intellij.openapi.project.Project;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourceMetadata;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.NebulaDataSourceMetadata;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.NameUtil;
 
@@ -30,7 +31,9 @@ public class DataContext {
     }
 
     public void setCurrentSpace(DataSourceApi dataSourceApi, String currentSpace) {
-        this.currentSpace.put(dataSourceApi.getUUID(), currentSpace);
+        if (currentSpace != null) {
+            this.currentSpace.put(dataSourceApi.getUUID(), currentSpace);
+        }
     }
 
     public DataSourceMetadata getMetadata(DataSourceApi dataSourceApi) {

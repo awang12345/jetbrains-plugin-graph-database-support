@@ -35,8 +35,6 @@ public class NebulaConsoleEditorFileListener implements FileEditorManagerListene
             // 追加顶部操作工具栏
             SQLConsoleToolbarForm toolbarForm = new SQLConsoleToolbarForm(project, fileEditor);
             source.addTopComponent(fileEditor, toolbarForm.getMainComponent());
-
-
         }
     }
 

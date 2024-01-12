@@ -1,5 +1,6 @@
 package com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree;
 
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaSchema;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.dto.ContextMenu;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.dto.MetadataContextMenu;
@@ -15,7 +16,7 @@ public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
     private String value;
     private DataSourceApi dataSourceApi;
 
-    private Object extData;
+    private NebulaSchema schema;
 
     public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value) {
         this(type, dataSourceApi, value, null, null);
@@ -25,12 +26,12 @@ public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
         this(type, dataSourceApi, value, icon, null);
     }
 
-    public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value, Icon icon, Object extData) {
+    public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value, Icon icon, NebulaSchema schema) {
         this.type = type;
         this.value = value;
         this.dataSourceApi = dataSourceApi;
         this.icon = icon;
-        this.extData = extData;
+        this.schema = schema;
         prepareContextMenu();
     }
 
@@ -38,7 +39,7 @@ public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
         if (type == NebulaTreeNodeType.SPACE
                 || type == NebulaTreeNodeType.EDGE
                 || type == NebulaTreeNodeType.TAG) {
-            metadataContextMenu = new MetadataContextMenu(type, getDataSourceApi(), value, this.extData);
+            metadataContextMenu = new MetadataContextMenu(type, getDataSourceApi(), value, this.schema);
         }
     }
 
@@ -81,5 +82,9 @@ public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
     @Override
     public DataSourceApi getDataSourceApi() {
         return dataSourceApi;
+    }
+
+    public NebulaSchema getSchema() {
+        return schema;
     }
 }

@@ -115,6 +115,4 @@ public class NebulaGraphNode implements GraphNode {
     public int hashCode() {
         return Objects.hash(id);
     }
-
-
 }

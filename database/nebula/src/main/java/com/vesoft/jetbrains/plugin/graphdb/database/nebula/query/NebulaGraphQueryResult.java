@@ -92,7 +92,7 @@ public class NebulaGraphQueryResult implements GraphQueryResult {
             this.exception.printStackTrace(new PrintWriter(errorWrite));
             return "Execute error:" + errorWrite;
         }
-        return "execute success !!";
+        return String.format(" [%s] Execute success !", resultSet.getSpaceName());
     }
 
     @Override

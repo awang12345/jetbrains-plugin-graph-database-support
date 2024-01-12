@@ -22,6 +22,8 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.context.DataContext;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerService;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.CommonConsoleLogEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryExecutionProcessEvent;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.helpers.DataSourceHelper;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.helpers.LogHelper;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.NameUtil;
 import com.vesoft.jetbrains.plugin.graphdb.platform.GraphConstants;
 import org.jetbrains.annotations.NotNull;
@@ -68,7 +70,7 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
             return actionGroup;
         }
         for (NebulaSpace nebulaSpace : nebulaSpaceList) {
-            actionGroup.add(new AnAction(formatName(nebulaSpace.getSpaceName())) {
+            actionGroup.add(new AnAction(nebulaSpace.getSpaceName()) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
                     switchSpace(e, nebulaSpace.getSpaceName());
@@ -77,10 +79,6 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
         }
         getTemplatePresentation().setText(((NebulaDataSourceMetadata) metadata).getNebulaGraphMetadata().getCurrentSpace(), false);
         return actionGroup;
-    }
-
-    private String formatName(String name) {
-        return "<html><u>" + name + "</u></html>";
     }
 
     private DataSourceMetadata getDataSourceMetadata() {
@@ -121,23 +119,25 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
                 }
             }
         }
-//        String selectSpaceName = DataContext.getInstance(project).getCurrentSpace(virtualFile.getName());
-//        if (selectSpaceName != null) {
-//            setCurrentSpace(e, selectSpaceName);
-//        }
         if (queryExecutionProcessEvent == null) {
             queryExecutionProcessEvent = new QueryExecutionProcessEvent() {
+                private DataSourceApi dataSource;
+
+                @Override
+                public void executionStarted(DataSourceApi dataSource, ExecuteQueryPayload payload) {
+                    this.dataSource = dataSource;
+                }
+
                 @Override
                 public void resultReceived(ExecuteQueryPayload payload, GraphQueryResult result) {
-                    if (result instanceof NebulaGraphQueryResult && payload.getFileName().equals(virtualFile.getName())) {
+                    if (result instanceof NebulaGraphQueryResult && dataSourceApi.getUUID().equals(this.dataSource.getUUID())) {
                         setCurrentSpace(e, ((NebulaGraphQueryResult) result).getCurrentSpace());
                     }
                 }
             };
             this.project.getMessageBus().connect().subscribe(QueryExecutionProcessEvent.QUERY_EXECUTION_PROCESS_TOPIC, queryExecutionProcessEvent);
-            String currentSpace = DataContext.getInstance(project).getCurrentSpace(dataSourceApi);
-            setCurrentSpace(e, currentSpace);
         }
+        Optional.ofNullable(DataContext.getInstance(project).getCurrentSpace(dataSourceApi)).ifPresent(space -> setCurrentSpace(e, space));
     }
 
     private void setCurrentSpace(AnActionEvent e, String spaceName) {
@@ -148,6 +148,5 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
         presentation.setDescription("Current Space");
         DataContext.getInstance(project).setCurrentSpace(dataSourceApi, spaceName);
     }
-
 
 }

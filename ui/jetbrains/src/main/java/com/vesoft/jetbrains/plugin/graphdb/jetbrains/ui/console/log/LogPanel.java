@@ -17,13 +17,16 @@ import com.vesoft.jetbrains.plugin.graphdb.database.opencypher.gremlin.exception
 import com.vesoft.jetbrains.plugin.graphdb.database.opencypher.gremlin.exceptions.OpenCypherGremlinException;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryPayload;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourceMetadata;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.NebulaDataSourceMetadata;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.context.DataContext;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.GraphConsoleView;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.CommonConsoleLogEvent;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.OpenTabEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryExecutionProcessEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryParametersRetrievalErrorEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.MetadataRetrieveEvent;
+import com.vesoft.jetbrains.plugin.graphdb.platform.GraphConstants;
 import icons.GraphIcons;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,10 +80,12 @@ public class LogPanel implements Disposable {
                 if (result.getRows().isEmpty()) {
                     info("No results.");
                 } else if (result.getNodes().isEmpty()) {
+                    messageBus.syncPublisher(OpenTabEvent.OPEN_TAB_TOPIC).openTab(GraphConstants.ToolWindow.Tabs.TABLE);
                     info(String.format("Got %s rows. View results: %s",
                             result.getRows().size(),
                             GoToTabFilter.TABLE_TAB_LINK));
                 } else {
+                    messageBus.syncPublisher(OpenTabEvent.OPEN_TAB_TOPIC).openTab(GraphConstants.ToolWindow.Tabs.GRAPH);
                     info(String.format("Got %s rows. View results: %s, %s",
                             result.getRows().size(),
                             GoToTabFilter.GRAPH_TAB_LINK,
@@ -114,8 +119,15 @@ public class LogPanel implements Disposable {
 
             @Override
             public void metadataRefreshSucceed(DataSourceApi nodeDataSource, DataSourceMetadata metadata) {
-                DataContext.getInstance(project).addMetadata(nodeDataSource, metadata);
-                DataContext.getInstance(project).addDataSourceApi(nodeDataSource);
+                DataContext dataContext = DataContext.getInstance(project);
+                dataContext.addMetadata(nodeDataSource, metadata);
+                dataContext.addDataSourceApi(nodeDataSource);
+                if (metadata instanceof NebulaDataSourceMetadata) {
+                    String currentSpace = ((NebulaDataSourceMetadata) metadata).getNebulaGraphMetadata().getCurrentSpace();
+                    dataContext.setCurrentSpace(nodeDataSource, currentSpace);
+                    info(String.format("DataSource[%s] - current space:%s!", nodeDataSource.getName(), currentSpace));
+                    newLine();
+                }
                 info(String.format("DataSource[%s] - metadata refreshed successfully!", nodeDataSource.getName()));
                 newLine();
                 newLine();

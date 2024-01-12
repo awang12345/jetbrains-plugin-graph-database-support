@@ -37,27 +37,27 @@ public class NebulaGraphQueryResultRow implements GraphQueryResultRow {
             if (wrapper.isNull()) {
                 return NebulaValueToString.NULL_VALUE;
             }
-            if (wrapper.isVertex()) {
-                return new NebulaGraphNode(wrapper.asNode());
-            }
-            if (wrapper.isEdge()) {
-                return new NebulaGraphRelationship(wrapper.asRelationship());
-            }
-            if (wrapper.isList()) {
-                List<Object> list = new ArrayList<>();
-                for (ValueWrapper vw : wrapper.asList()) {
-                    list.add(vw.asString());
-                }
-                return list;
-            }
-            if (wrapper.isMap()) {
-                HashMap<String, String> map = new HashMap<>();
-                HashMap<String, ValueWrapper> valueMap = wrapper.asMap();
-                for (Map.Entry<String, ValueWrapper> entry : valueMap.entrySet()) {
-                    map.put(entry.getKey(), NebulaValueToString.valueToString(entry.getValue().getValue()));
-                }
-                return map;
-            }
+//            if (wrapper.isVertex()) {
+//                return new NebulaGraphNode(wrapper.asNode());
+//            }
+//            if (wrapper.isEdge()) {
+//                return new NebulaGraphRelationship(wrapper.asRelationship());
+//            }
+//            if (wrapper.isList()) {
+//                List<Object> list = new ArrayList<>();
+//                for (ValueWrapper vw : wrapper.asList()) {
+//                    list.add(NebulaValueToString.valueToString(vw.getValue()));
+//                }
+//                return list;
+//            }
+//            if (wrapper.isMap()) {
+//                HashMap<String, String> map = new HashMap<>();
+//                HashMap<String, ValueWrapper> valueMap = wrapper.asMap();
+//                for (Map.Entry<String, ValueWrapper> entry : valueMap.entrySet()) {
+//                    map.put(entry.getKey(), NebulaValueToString.valueToString(entry.getValue().getValue()));
+//                }
+//                return map;
+//            }
             return NebulaValueToString.valueToString(wrapper.getValue());
         } catch (Exception ex) {
             return "Parse error:" + ex.getMessage();

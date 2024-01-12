@@ -41,7 +41,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
                     resultSet = sessionPool.execute(query);
                 }
                 if (resultSet.getErrorCode() != ErrorCode.SUCCEEDED.getValue()) {
-                    throw new RuntimeException("Nebula nGQL execute fail !" + resultSet.getErrorMessage());
+                    throw new RuntimeException(String.format("[%s] Nebula nGQL execute fail !", resultSet.getSpaceName(), resultSet.getErrorMessage()));
                 }
                 return new NebulaGraphQueryResult(startTime, resultSet, null);
             } catch (RuntimeException e) {
