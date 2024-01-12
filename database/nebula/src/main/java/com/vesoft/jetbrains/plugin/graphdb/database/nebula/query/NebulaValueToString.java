@@ -2,6 +2,7 @@ package com.vesoft.jetbrains.plugin.graphdb.database.nebula.query;
 
 import com.vesoft.nebula.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ public class NebulaValueToString {
         int setField = value.getSetField();
         switch (setField) {
             case Value.SVAL:
-                return new String(value.getSVal());
+                return new String(value.getSVal(), StandardCharsets.UTF_8);
             case Value.EVAL:
                 return edgeToString(value.getEVal());
             case Value.LVAL:

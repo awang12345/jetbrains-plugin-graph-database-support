@@ -26,7 +26,6 @@ public class ValueConverter {
         } else if (value instanceof String) {
             return value;
         }
-
         return Objects.toString(value);
     }
 

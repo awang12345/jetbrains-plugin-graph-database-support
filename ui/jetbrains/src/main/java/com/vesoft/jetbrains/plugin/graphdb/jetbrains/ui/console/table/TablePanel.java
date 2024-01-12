@@ -10,13 +10,16 @@ import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResultRo
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryPayload;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.GraphConsoleView;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.CommonConsoleLogEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.CopyQueryOutputEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryExecutionProcessEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.table.editor.CompositeTableCellEditor;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.table.renderer.CompositeTableCellRenderer;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.TableContextMenuMouseAdapter;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.helpers.LogHelper;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.helpers.SerialisationHelper;
 import icons.GraphIcons;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,11 +50,14 @@ public class TablePanel {
 
     private ComboBox<Integer> pageSizeComboBox;
 
+    private Project project;
+
     public TablePanel() {
         valueConverter = new ValueConverter(this);
     }
 
     public void initialize(GraphConsoleView graphConsoleView, Project project) {
+        this.project = project;
         MessageBus messageBus = project.getMessageBus();
         tableModel = new QueryResultTableModel();
         table = graphConsoleView.getTableExecuteResults();
@@ -218,6 +224,7 @@ public class TablePanel {
             tableModel.addColumn("#");
             columns.forEach((column) -> tableModel.addColumn(column.getName()));
             int seq = 0;
+
             for (int i = startRow; i < endRow; i++) {
                 List<Object> data = new ArrayList<>(columns.size());
                 data.add(seq++);
