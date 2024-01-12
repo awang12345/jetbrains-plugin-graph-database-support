@@ -3,11 +3,11 @@
     <name>Nebula Graph Database support</name>
     <!-- Should be automatically replaced by gradle build -->
     <version>9.9.9</version>
-    <vendor email="j.awang@foxmail.com" url="https://awang12345.github.io">awang12345</vendor>
+    <vendor email="j.awang@foxmail.com" url="https://github.com/awang12345">awang12345</vendor>
 
     <description><![CDATA[
         <p>
-            <a href="https://github.com/awang12345/nebula-console-intellij-plugin">
+            <a href="https://github.com/nebula-contrib/nebula-console-intellij-plugin">
                 Integration with Graph Databases
             </a>
         </p>
@@ -72,6 +72,31 @@
     <depends>com.intellij.modules.lang</depends>
     <depends optional="true">com.intellij.modules.java</depends>
     <depends optional="true" config-file="intellilang-cypher-support.xml">org.intellij.intelliLang</depends>
+
+    <change-notes>
+        <![CDATA[
+            <h3>1.0.2, 2024-01-12</h3><br/>
+            <b>新功能:</b><br/>
+            - 双击DataSource下space树节点可更换SQL编辑框操作的space<br/>
+            - 双击DataSource下tag或者edge树节点可以直接预览数据<br/>
+            - SQL编辑框的space下拉列表框与当前会话space保持一致<br/>
+            <br/>
+            <b>修复BUG:</b><br/>
+            - <a href="https://github.com/nebula-contrib/nebula-console-intellij-plugin/issues/3">刷新原数据异常</a> <br/>
+            - <a href="https://github.com/nebula-contrib/nebula-console-intellij-plugin/issues/1">显示查询结果中文乱码</a> <br/>
+            <br/>
+            <b>Improvements:</b><br/>
+            - Double-click the space tree node to select the current space<br/>
+            - Double-click on the tag or edge tree node to preview the data<br/>
+            - The space drop-down list in the SQL edit box displays the current space in real time<br/>
+            <br/>
+            <b>Fix bug:</b><br/>
+            - <a href="https://github.com/nebula-contrib/nebula-console-intellij-plugin/issues/3">Attempting to connect LOG error message</a> <br/>
+            - <a href="https://github.com/nebula-contrib/nebula-console-intellij-plugin/issues/1">Chinese supports garbled characters</a> <br/>
+            <br/>
+        ]]>
+    </change-notes>
+
 
     <application-components>
         <!-- Settings -->
