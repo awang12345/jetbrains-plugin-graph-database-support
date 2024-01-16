@@ -18,8 +18,8 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.actions.Refre
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.DataSourceInteractions;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.DataSourceMetadataUi;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.*;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.model.LoadingModel;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.FileUtil;
-import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.*;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -145,6 +145,8 @@ public class DataSourcesView implements Disposable {
         TreeNodeModelApi userObject = (TreeNodeModelApi) treeNode.getUserObject();
         DataSourceApi nodeDataSource = userObject.getDataSourceApi();
         Analytics.event(nodeDataSource, "refreshMetadata");
+        treeNode.removeAllChildren();
+        treeNode.add(new PatchedDefaultMutableTreeNode(new LoadingModel("Loading...", nodeDataSource)));
         return dataSourceMetadataUi.updateDataSourceMetadataUi(treeNode, nodeDataSource);
     }
 
@@ -154,7 +156,11 @@ public class DataSourcesView implements Disposable {
         TreeNodeModelApi model = new DataSourceTreeNodeModel(dataSource);
         PatchedDefaultMutableTreeNode treeNode = new PatchedDefaultMutableTreeNode(model);
         treeRoot.add(treeNode);
-        refreshDataSourceMetadata(treeNode);
+        refreshDataSourceMetadata(treeNode).thenAccept((isRefreshed) -> {
+            if (isRefreshed) {
+                treeModel.reload();
+            }
+        });
         treeModel.reload();
     }
 

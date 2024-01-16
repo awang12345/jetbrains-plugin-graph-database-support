@@ -26,6 +26,7 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.OpenTabEve
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryExecutionProcessEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryParametersRetrievalErrorEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.MetadataRetrieveEvent;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.Notifier;
 import com.vesoft.jetbrains.plugin.graphdb.platform.GraphConstants;
 import icons.GraphIcons;
 import org.jetbrains.annotations.Nullable;
@@ -76,6 +77,7 @@ public class LogPanel implements Disposable {
 
             @Override
             public void resultReceived(ExecuteQueryPayload payload, GraphQueryResult result) {
+                Notifier.info("Graph sql execute success", payload.getQueries().get(0));
                 info(String.format("Query executed in %sms. %s", result.getExecutionTimeMs(), result.getResultSummary()));
                 if (result.getRows().isEmpty()) {
                     info("No results.");
@@ -101,7 +103,8 @@ public class LogPanel implements Disposable {
             @Override
             public void handleError(ExecuteQueryPayload payload, Exception exception) {
                 error("Error occurred: ");
-                printException(exception);
+                String errorMsg = printException(exception);
+                Notifier.error("Graph sql execute error", errorMsg);
             }
 
             @Override
@@ -113,6 +116,7 @@ public class LogPanel implements Disposable {
         messageBus.connect().subscribe(MetadataRetrieveEvent.METADATA_RETRIEVE_EVENT, new MetadataRetrieveEvent() {
             @Override
             public void startMetadataRefresh(DataSourceApi nodeDataSource) {
+                Notifier.info("Refresh Graph Database", "Start refresh graph database metadata for " + nodeDataSource.getName());
                 info(String.format("DataSource[%s] - refreshing metadata...", nodeDataSource.getName()));
                 newLine();
             }
@@ -137,7 +141,8 @@ public class LogPanel implements Disposable {
             public void metadataRefreshFailed(DataSourceApi nodeDataSource, Exception exception) {
                 String prefix = String.format("DataSource[%s] - metadata refresh failed. Reason: ", nodeDataSource.getName());
                 error(prefix);
-                printException(exception);
+                String errorMsg = printException(exception);
+                Notifier.error("Refresh Graph Database " + nodeDataSource.getName(), errorMsg);
                 newLine();
             }
         });

@@ -4,13 +4,9 @@ import com.intellij.util.messages.Topic;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourceMetadata;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 
-public interface MetadataRetrieveEvent {
+public interface MetadataRefreshEvent {
 
-    Topic<MetadataRetrieveEvent> METADATA_RETRIEVE_EVENT = Topic.create("GraphDatabaseDataSource.MetadataRetrieve", MetadataRetrieveEvent.class);
+    Topic<MetadataRefreshEvent> METADATA_REFRESH_EVENT = Topic.create("GraphDatabaseDataSource.MetadataRefresh", MetadataRefreshEvent.class);
 
     default void startMetadataRefresh(DataSourceApi nodeDataSource){};
-
-    default void metadataRefreshSucceed(DataSourceApi nodeDataSource, DataSourceMetadata metadata){};
-
-    default void metadataRefreshFailed(DataSourceApi nodeDataSource, Exception exception){};
 }

@@ -13,12 +13,16 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.DataSourcesVi
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.nebula.NebulaDataSourceDialog;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.neo4j.bolt.Neo4jBoltDataSourceDialog;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.tinkerpop.gremlin.OpenCypherGremlinDataSourceDialog;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.NebulaTreeNodeType;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.Neo4jTreeNodeType;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.NodeType;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.TreeNodeModelApi;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.model.LoadingModel;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.FileUtil;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.Notifier;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -125,7 +129,16 @@ public class DataSourceInteractions {
                         return;
                     }
 
-                    DataSourceApi dataSource = getDataSourceApi(selectedNodes[0]);
+                    DefaultMutableTreeNode selectedNode = selectedNodes[0];
+                    dataSourceTree.expandPath(new TreePath(selectedNode.getPath()));
+
+                    if ((!selectedNode.children().hasMoreElements() || ((DefaultMutableTreeNode)selectedNode.getChildAt(0)).getUserObject() instanceof LoadingModel)
+                            && ((TreeNodeModelApi) selectedNode.getUserObject()).getType() == NebulaTreeNodeType.DATASOURCE) {
+                        Notifier.warn("Notify", "Please waiting for nebula meta data to be loaded");
+                        return;
+                    }
+
+                    DataSourceApi dataSource = getDataSourceApi(selectedNode);
                     Analytics.event(dataSource, "openEditor");
 
                     try {
@@ -140,8 +153,11 @@ public class DataSourceInteractions {
     }
 
     private boolean isDataSource(DefaultMutableTreeNode node) {
-        return node.getUserObject() instanceof TreeNodeModelApi
-                && ((TreeNodeModelApi) node.getUserObject()).getType() == Neo4jTreeNodeType.DATASOURCE;
+        if (!(node.getUserObject() instanceof TreeNodeModelApi)) {
+            return false;
+        }
+        NodeType type = ((TreeNodeModelApi) node.getUserObject()).getType();
+        return type == Neo4jTreeNodeType.DATASOURCE || type == NebulaTreeNodeType.DATASOURCE;
     }
 
     private DataSourceApi getDataSourceApi(DefaultMutableTreeNode node) {

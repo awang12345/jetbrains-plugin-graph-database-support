@@ -1,5 +1,6 @@
 package com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.plan;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.actionSystem.ex.ComboBoxAction;
 import com.intellij.openapi.components.ServiceManager;
@@ -7,6 +8,7 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.messages.MessageBus;
+import com.intellij.util.messages.MessageBusConnection;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetadata;
@@ -22,8 +24,7 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.context.DataContext;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerService;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.CommonConsoleLogEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryExecutionProcessEvent;
-import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.helpers.DataSourceHelper;
-import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.helpers.LogHelper;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.MetadataRetrieveEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.NameUtil;
 import com.vesoft.jetbrains.plugin.graphdb.platform.GraphConstants;
 import org.jetbrains.annotations.NotNull;
@@ -135,7 +136,24 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
                     }
                 }
             };
-            this.project.getMessageBus().connect().subscribe(QueryExecutionProcessEvent.QUERY_EXECUTION_PROCESS_TOPIC, queryExecutionProcessEvent);
+            MessageBusConnection connect = this.project.getMessageBus().connect();
+            connect.subscribe(QueryExecutionProcessEvent.QUERY_EXECUTION_PROCESS_TOPIC, queryExecutionProcessEvent);
+            connect.subscribe(MetadataRetrieveEvent.METADATA_RETRIEVE_EVENT, new MetadataRetrieveEvent() {
+                @Override
+                public void startMetadataRefresh(DataSourceApi nodeDataSource) {
+                    if (dataSourceApi.getUUID().equals(nodeDataSource.getUUID())) {
+                        setCurrentSpace(e, "Space Reloading...");
+                        e.getPresentation().setIcon(AllIcons.Actions.Refresh);
+                    }
+                }
+
+                @Override
+                public void metadataRefreshSucceed(DataSourceApi nodeDataSource, DataSourceMetadata metadata) {
+                    if (dataSourceApi.getUUID().equals(nodeDataSource.getUUID())) {
+                        setCurrentSpace(e, ((NebulaDataSourceMetadata) metadata).getNebulaGraphMetadata().getCurrentSpace());
+                    }
+                }
+            });
         }
         Optional.ofNullable(DataContext.getInstance(project).getCurrentSpace(dataSourceApi)).ifPresent(space -> setCurrentSpace(e, space));
     }
@@ -146,6 +164,7 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
         presentation.setEnabled(true);
         presentation.setVisible(true);
         presentation.setDescription("Current Space");
+        presentation.setIcon(null);
         DataContext.getInstance(project).setCurrentSpace(dataSourceApi, spaceName);
     }
 
