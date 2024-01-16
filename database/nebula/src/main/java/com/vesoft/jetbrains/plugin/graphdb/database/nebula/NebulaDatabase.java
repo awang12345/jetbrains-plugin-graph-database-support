@@ -12,6 +12,9 @@ import com.vesoft.nebula.ErrorCode;
 import com.vesoft.nebula.client.graph.SessionPoolConfig;
 import com.vesoft.nebula.client.graph.data.HostAddress;
 import com.vesoft.nebula.client.graph.data.ResultSet;
+import com.vesoft.nebula.client.meta.MetaClient;
+import com.vesoft.nebula.client.meta.MetaManager;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -41,7 +44,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
                     resultSet = sessionPool.execute(query);
                 }
                 if (resultSet.getErrorCode() != ErrorCode.SUCCEEDED.getValue()) {
-                    throw new RuntimeException(String.format("[%s] Nebula nGQL execute fail !", resultSet.getSpaceName(), resultSet.getErrorMessage()));
+                    throw new RuntimeException(String.format("[%s] Nebula nGQL execute fail. %s", resultSet.getSpaceName(), resultSet.getErrorMessage()));
                 }
                 return new NebulaGraphQueryResult(startTime, resultSet, null);
             } catch (RuntimeException e) {
@@ -164,6 +167,35 @@ public class NebulaDatabase implements GraphDatabaseApi {
         }
         ResultSet.Record valueWrappers = resultSet.rowValues(0);
         return valueWrappers.get(1).asString();
+    }
+
+    private MetaManager getMetaInfo(SessionPool sessionPool) {
+        try {
+            HostAddress metaAddress = getMetaAddress(sessionPool);
+            MetaManager metaManager = new MetaManager(Arrays.asList(metaAddress), 3000, 1, 1, false, null);
+            return metaManager;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
+
+    private HostAddress getMetaAddress(SessionPool sessionPool) throws Exception {
+        String sql = "SHOW META LEADER";
+        ResultSet resultSet = sessionPool.execute(sql);
+        if (resultSet.rowsSize() == 0) {
+            return null;
+        }
+        ResultSet.Record valueWrappers = resultSet.rowValues(0);
+        String address = valueWrappers.get(0).asString();
+        String[] metaHostPort = StringUtils.split(address, ":");
+        String host = metaHostPort[0];
+        String port = metaHostPort[1];
+        if (host.equals(sessionPool.getAddress().getHost())
+                || !StringUtils.startsWithAny(host, new String[]{"localhost", "127.0.0.1"})) {
+            return new HostAddress(host, Integer.parseInt(port));
+        }
+        return new HostAddress(sessionPool.getAddress().getHost(), Integer.parseInt(port));
     }
 
 }

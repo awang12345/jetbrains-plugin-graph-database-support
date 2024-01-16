@@ -221,11 +221,14 @@ public class LogPanel implements Disposable {
         JTextArea exceptionDetails = new JTextArea();
         exceptionDetails.setLineWrap(false);
         exceptionDetails.append(details);
+        exceptionDetails.setEditable(true);
+        exceptionDetails.setFocusable(false);
         JLabel jLabel = new JLabel(exception.getMessage(), GraphIcons.Nodes.PROCESS_FAIL, JLabel.LEFT);
 
         JBScrollPane scrollPane = new JBScrollPane(exceptionDetails);
         scrollPane.setPreferredSize(new Dimension(-1, HEIGHT));
         popupPanel.add(jLabel, BorderLayout.NORTH);
+        popupPanel.setSize(780, 600);
         popupPanel.add(scrollPane, BorderLayout.CENTER);
         String gremlinTranslationWarning = exception instanceof OpenCypherGremlinException ? ExceptionErrorMessages.SYNTAX_WARNING.getDescription() : "";
 
