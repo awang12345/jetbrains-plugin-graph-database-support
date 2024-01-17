@@ -4,6 +4,7 @@ import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphMetadata;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public interface GraphDatabaseApi {
 
@@ -11,5 +12,9 @@ public interface GraphDatabaseApi {
 
     GraphQueryResult execute(String query, Map<String, Object> statementParameters);
 
-    GraphMetadata metadata();
+    default GraphMetadata metadata() {
+        return metadata(null, null);
+    }
+
+    GraphMetadata metadata(Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay);
 }

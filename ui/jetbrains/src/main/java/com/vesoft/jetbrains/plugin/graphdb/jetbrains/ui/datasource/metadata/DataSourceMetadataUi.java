@@ -1,5 +1,6 @@
 package com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.treeStructure.PatchedDefaultMutableTreeNode;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaEdge;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetadata;
@@ -49,10 +50,10 @@ public class DataSourceMetadataUi {
         handlers.put(NEBULA, this::updateNebulaMetadataUi);
     }
 
-    public CompletableFuture<Boolean> updateDataSourceMetadataUi(PatchedDefaultMutableTreeNode node, DataSourceApi nodeDataSource) {
+    public CompletableFuture<Boolean> updateDataSourceMetadataUi(PatchedDefaultMutableTreeNode node, DataSourceApi nodeDataSource, Project project) {
         DataSourceType sourceType = nodeDataSource.getDataSourceType();
         if (handlers.containsKey(sourceType)) {
-            return dataSourcesComponent.getMetadata(nodeDataSource)
+            return dataSourcesComponent.getMetadata(nodeDataSource, project)
                     .thenApply((data) ->
                             data.map(metadata -> handlers.get(sourceType).apply(node, metadata))
                                     .orElse(false));

@@ -37,6 +37,7 @@ public final class GraphIcons extends AllIcons {
         public static final Icon PROCESS_OK = getIcon("/graphdb/icons/nodes/process_success.svg");
         public static final Icon PROCESS_FAIL = getIcon("/graphdb/icons/nodes/process_fail.svg");
         public static final Icon DDL = getIcon("/graphdb/icons/nodes/ddl.svg");
+        public static final Icon DATABASE = getIcon("/graphdb/icons/nodes/database.svg");
         public static final Icon PREVIEW = getIcon("/graphdb/icons/nodes/preview.svg");
         public static final Icon PRE_PAGE = getIcon("/graphdb/icons/nodes/pre_page.svg");
         public static final Icon NEXT_PAGE = getIcon("/graphdb/icons/nodes/next_page.svg");

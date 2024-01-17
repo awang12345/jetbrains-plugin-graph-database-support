@@ -29,7 +29,7 @@ public abstract class AbstractDataSourceMetadataTest extends BaseIntegrationTest
     public abstract DataSourceApi getDataSource();
 
     public void testMetadataExists() throws ExecutionException, InterruptedException {
-        Optional<DataSourceMetadata> metadata = component().dataSourcesMetadata().getMetadata(getDataSource()).get();
+        Optional<DataSourceMetadata> metadata = component().dataSourcesMetadata().getMetadata(getDataSource(),null).get();
         assertThat(metadata).isPresent();
     }
 

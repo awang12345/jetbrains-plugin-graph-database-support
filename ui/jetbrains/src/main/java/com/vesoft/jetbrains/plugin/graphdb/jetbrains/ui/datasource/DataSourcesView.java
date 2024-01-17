@@ -24,11 +24,11 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.FileUtil;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 public class DataSourcesView implements Disposable {
@@ -132,12 +132,14 @@ public class DataSourcesView implements Disposable {
     public void refreshDataSourcesMetadata() {
         Enumeration children = treeRoot.children();
         while (children.hasMoreElements()) {
-            refreshDataSourceMetadata((PatchedDefaultMutableTreeNode) children.nextElement())
+            PatchedDefaultMutableTreeNode treeNode = (PatchedDefaultMutableTreeNode) children.nextElement();
+            refreshDataSourceMetadata(treeNode)
                     .thenAccept((isRefreshed) -> {
                         if (isRefreshed) {
-                            treeModel.reload();
+                            reloadTreeNode(treeNode);
                         }
                     });
+            reloadTreeNode(treeNode);
         }
     }
 
@@ -147,7 +149,7 @@ public class DataSourcesView implements Disposable {
         Analytics.event(nodeDataSource, "refreshMetadata");
         treeNode.removeAllChildren();
         treeNode.add(new PatchedDefaultMutableTreeNode(new LoadingModel("Loading...", nodeDataSource)));
-        return dataSourceMetadataUi.updateDataSourceMetadataUi(treeNode, nodeDataSource);
+        return dataSourceMetadataUi.updateDataSourceMetadataUi(treeNode, nodeDataSource, project);
     }
 
     public void createDataSource(DataSourceApi dataSource) {
@@ -158,10 +160,10 @@ public class DataSourcesView implements Disposable {
         treeRoot.add(treeNode);
         refreshDataSourceMetadata(treeNode).thenAccept((isRefreshed) -> {
             if (isRefreshed) {
-                treeModel.reload();
+                reloadTreeNode(treeNode);
             }
         });
-        treeModel.reload();
+        reloadTreeNode(treeNode);
     }
 
     public void updateDataSource(PatchedDefaultMutableTreeNode treeNode, DataSourceApi oldDataSource, DataSourceApi newDataSource) {
@@ -169,7 +171,16 @@ public class DataSourcesView implements Disposable {
         component.getDataSourceContainer().updateDataSource(oldDataSource, newDataSource);
         treeNode.setUserObject(new DataSourceTreeNodeModel(newDataSource));
         refreshDataSourceMetadata(treeNode);
+        reloadTreeNode(treeNode);
+    }
+
+    private void reloadTreeNode(PatchedDefaultMutableTreeNode treeNode) {
+        TreePath[] expandedNodes = getExpandedNodes(dataSourceTree);
         treeModel.reload();
+        Optional.ofNullable(expandedNodes).ifPresent(treePaths -> Arrays.stream(treePaths).forEach(treePath -> dataSourceTree.expandPath(treePath)));
+        if (treeNode != null) {
+            dataSourceTree.expandPath(new TreePath(treeNode.getPath()));
+        }
     }
 
     public void removeDataSources(Project project, List<DataSourceApi> dataSourcesForRemoval) {
@@ -202,7 +213,17 @@ public class DataSourcesView implements Disposable {
                 .filter(Objects::nonNull)
                 .forEach(treeRoot::remove);
 
-        treeModel.reload();
+        reloadTreeNode(null);
+    }
+
+    public TreePath[] getExpandedNodes(JTree tree) {
+        Enumeration<TreePath> paths = tree.getExpandedDescendants(new TreePath(tree.getModel().getRoot()));
+        List<TreePath> expandedPaths = new ArrayList<>();
+        while (paths.hasMoreElements()) {
+            TreePath path = paths.nextElement();
+            expandedPaths.add(path);
+        }
+        return expandedPaths.toArray(new TreePath[0]);
     }
 
     @Override

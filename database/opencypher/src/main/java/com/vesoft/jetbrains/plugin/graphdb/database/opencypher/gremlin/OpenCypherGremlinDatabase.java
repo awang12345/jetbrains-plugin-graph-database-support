@@ -24,10 +24,12 @@ import org.opencypher.gremlin.client.CypherGremlinClient;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
+
 /**
  * Communicates with TinkerPop database by translating Cypher to Gremlin
  */
@@ -121,9 +123,10 @@ public class OpenCypherGremlinDatabase implements GraphDatabaseApi {
 
     @Override
     @SuppressWarnings("unchecked")
-    public GraphMetadata metadata() {
+    public GraphMetadata metadata(Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay) {
         Client gremlinClient = cluster.connect();
         try {
+            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("gremlin execute : g.V().label().groupCount()"));
             List<Result> labels = gremlinClient.submit("g.V().label().groupCount()").all().get();
             Map<String, Number> labelResult = labels.stream()
                     .map(r -> r.get(Map.class))
@@ -131,6 +134,7 @@ public class OpenCypherGremlinDatabase implements GraphDatabaseApi {
                     .flatMap(m -> m.entrySet().stream())
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("gremlin execute : g.E().label().groupCount()"));
             List<Result> rels = gremlinClient.submit("g.E().label().groupCount()").all().get();
             Map<String, Number> relResult = rels.stream()
                     .map(r -> r.get(Map.class))
@@ -138,12 +142,14 @@ public class OpenCypherGremlinDatabase implements GraphDatabaseApi {
                     .flatMap(m -> m.entrySet().stream())
                     .collect((Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
+            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("gremlin execute : g.V().properties().key().dedup()"));
             List<Result> vertexProp = gremlinClient.submit("g.V().properties().key().dedup()").all().get();
 
             List<String> vertexPropResult = vertexProp.stream()
                     .map(Result::getString)
                     .collect(toList());
 
+            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("gremlin execute : g.E().properties().key().dedup()"));
             List<Result> edgeProp = gremlinClient.submit("g.E().properties().key().dedup()").all().get();
 
             List<String> edgePropResult = edgeProp.stream()

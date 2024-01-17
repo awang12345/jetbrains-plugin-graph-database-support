@@ -10,6 +10,7 @@ import org.neo4j.driver.exceptions.ClientException;
 import java.nio.channels.UnresolvedAddressException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Communicates with Neo4j 3.0+ database using Bolt driver.
@@ -76,7 +77,7 @@ public class Neo4jBoltDatabase implements GraphDatabaseApi {
     }
 
     @Override
-    public GraphMetadata metadata() {
+    public GraphMetadata metadata(Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay) {
         throw new IllegalStateException("Not implemented");
     }
 }

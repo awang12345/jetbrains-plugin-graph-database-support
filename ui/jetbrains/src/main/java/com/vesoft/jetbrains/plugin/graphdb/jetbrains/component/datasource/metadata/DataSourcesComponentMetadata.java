@@ -1,6 +1,9 @@
 package com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata;
 
 import com.intellij.openapi.components.ProjectComponent;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.MessageBus;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphMetadata;
@@ -24,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType.*;
@@ -32,7 +34,7 @@ import static java.util.stream.Collectors.toList;
 
 public class DataSourcesComponentMetadata implements ProjectComponent {
 
-    private final Map<DataSourceType, Function<DataSourceApi, DataSourceMetadata>> handlers = new HashMap<>();
+    private final Map<DataSourceType, DataSourcesMetadataFetcher> handlers = new HashMap<>();
     private CypherMetadataProviderService cypherMetadataProviderService;
     private ExecutorService executorService;
     private DatabaseManagerService databaseManager;
@@ -54,6 +56,10 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
     }
 
     public CompletableFuture<Optional<DataSourceMetadata>> getMetadata(DataSourceApi dataSource) {
+        return getMetadata(dataSource, null);
+    }
+
+    public CompletableFuture<Optional<DataSourceMetadata>> getMetadata(DataSourceApi dataSource, Project project) {
         MetadataRetrieveEvent metadataRetrieveEvent = messageBus.syncPublisher(MetadataRetrieveEvent.METADATA_RETRIEVE_EVENT);
 
         metadataRetrieveEvent.startMetadataRefresh(dataSource);
@@ -62,7 +68,7 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
         DataSourceType sourceType = dataSource.getDataSourceType();
         if (handlers.containsKey(sourceType)) {
             executorService.runInBackground(
-                    () -> handlers.get(sourceType).apply(dataSource),
+                    () -> handlers.get(sourceType).fetchDataSourceMetadata(dataSource, Optional.ofNullable(project)),
                     (metadata) -> {
                         if (sourceType != NEBULA) {
                             updateNeo4jBoltMetadata(dataSource, (Neo4jBoltCypherDataSourceMetadata) metadata);
@@ -84,7 +90,7 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
         return future;
     }
 
-    private DataSourceMetadata getNeo4jBoltMetadata(DataSourceApi dataSource) {
+    private DataSourceMetadata getNeo4jBoltMetadata(DataSourceApi dataSource, Optional<Project> project) {
         GraphDatabaseApi db = databaseManager.getDatabaseFor(dataSource);
         Neo4jBoltCypherDataSourceMetadata metadata = new Neo4jBoltCypherDataSourceMetadata();
 
@@ -125,7 +131,7 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
         return metadata;
     }
 
-    private DataSourceMetadata getOpenCypherGremlinMetadata(DataSourceApi dataSource) {
+    private DataSourceMetadata getOpenCypherGremlinMetadata(DataSourceApi dataSource, Optional<Project> project) {
         GraphDatabaseApi db = databaseManager.getDatabaseFor(dataSource);
         Neo4jBoltCypherDataSourceMetadata result = new Neo4jBoltCypherDataSourceMetadata();
 
@@ -150,10 +156,29 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
         return result;
     }
 
-    private DataSourceMetadata getNebulaMetadata(DataSourceApi dataSource) {
+    private DataSourceMetadata getNebulaMetadata(DataSourceApi dataSource, Optional<Project> project) {
         GraphDatabaseApi db = databaseManager.getDatabaseFor(dataSource);
-        GraphMetadata metadata = db.metadata();
-        return new NebulaDataSourceMetadata((NebulaGraphMetadata) metadata);
+        Project pj = project.orElse(null);
+        if (pj != null) {
+            CompletableFuture<GraphMetadata> completableFuture = new CompletableFuture<>();
+            new Task.Backgroundable(pj, "Loading Nebula Graph Datasource Metadata") {
+                @Override
+                public void run(ProgressIndicator indicator) {
+                    indicator.setIndeterminate(false);
+                    indicator.setText("Loading datasource metadata : " + dataSource.getName());
+                    GraphMetadata metadata = db.metadata(detail -> indicator.setText2(detail), fraction -> indicator.setFraction(fraction));
+                    completableFuture.complete(metadata);
+                }
+            }.queue();
+            try {
+                return new NebulaDataSourceMetadata((NebulaGraphMetadata) completableFuture.get());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            GraphMetadata metadata = db.metadata();
+            return new NebulaDataSourceMetadata((NebulaGraphMetadata) metadata);
+        }
     }
 
     private List<String> extractRelationshipTypes(GraphQueryResult relationshipQueryResult) {
@@ -268,4 +293,9 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
     public String getComponentName() {
         return "GraphDatabaseSupport.DataSourcesMetadata";
     }
+
+    interface DataSourcesMetadataFetcher {
+        DataSourceMetadata fetchDataSourceMetadata(DataSourceApi dataSource, Optional<Project> project);
+    }
+
 }
