@@ -13,6 +13,7 @@ import com.vesoft.nebula.client.graph.exception.IOErrorException;
 import com.vesoft.nebula.client.graph.net.AuthResult;
 import com.vesoft.nebula.client.graph.net.SessionState;
 import com.vesoft.nebula.client.graph.net.SyncConnection;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -50,7 +51,7 @@ public class SessionPool implements Serializable {
     private final boolean reconnect;
     private final String spaceName;
     private final String useSpace;
-
+    public static final String NULL_SPACE = "__NULL_SPACE__";
 
     public SessionPool(SessionPoolConfig poolConfig) {
         this.sessionPoolConfig = poolConfig;
@@ -61,8 +62,8 @@ public class SessionPool implements Serializable {
         this.intervalTime = poolConfig.getIntervalTime();
         this.reconnect = poolConfig.isReconnect();
         this.healthCheckTime = poolConfig.getHealthCheckTime();
-        this.spaceName = poolConfig.getSpaceName();
-        useSpace = "USE `" + spaceName + "`;";
+        this.spaceName = StringUtils.defaultIfBlank(poolConfig.getSpaceName(), NULL_SPACE);
+        this.useSpace = "USE `" + spaceName + "`;";
         init();
     }
 
@@ -96,7 +97,7 @@ public class SessionPool implements Serializable {
         }
 
         // if session size is equal to max size and no idle session here, throw exception
-        throw new RuntimeException("no extra session available for :"+ getAddress());
+        throw new RuntimeException("no extra session available for :" + getAddress());
     }
 
 
@@ -364,10 +365,12 @@ public class SessionPool implements Serializable {
 
         NebulaSession nebulaSession = new NebulaSession(connection, authResult.getSessionId(),
                 authResult.getTimezoneOffset(), state);
-        ResultSet result = nebulaSession.execute(useSpace);
-        if (!result.isSucceeded()) {
-            nebulaSession.release();
-            throw new BindSpaceFailedException(result.getErrorMessage());
+        if (StringUtils.isNotBlank(spaceName) && !NULL_SPACE.equals(spaceName)) {
+            ResultSet result = nebulaSession.execute(useSpace);
+            if (!result.isSucceeded()) {
+                nebulaSession.release();
+                throw new BindSpaceFailedException(result.getErrorMessage());
+            }
         }
         sessionList.add(nebulaSession);
         return nebulaSession;

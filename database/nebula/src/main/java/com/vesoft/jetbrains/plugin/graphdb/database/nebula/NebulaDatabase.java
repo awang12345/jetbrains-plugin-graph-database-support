@@ -15,6 +15,7 @@ import com.vesoft.nebula.client.graph.data.ResultSet;
 import com.vesoft.nebula.client.meta.MetaClient;
 import com.vesoft.nebula.client.meta.MetaManager;
 import org.apache.commons.lang.StringUtils;
+import org.bouncycastle.util.encoders.Hex;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -39,10 +40,11 @@ public class NebulaDatabase implements GraphDatabaseApi {
             ResultSet resultSet;
             long startTime = System.currentTimeMillis();
             try {
+                String ngql = new String(query.getBytes("UTF-8"));
                 if (statementParameters != null && !statementParameters.isEmpty()) {
-                    resultSet = sessionPool.execute(query, statementParameters);
+                    resultSet = sessionPool.execute(ngql, statementParameters);
                 } else {
-                    resultSet = sessionPool.execute(query);
+                    resultSet = sessionPool.execute(ngql);
                 }
                 if (resultSet.getErrorCode() != ErrorCode.SUCCEEDED.getValue()) {
                     throw new RuntimeException(String.format("[%s] Nebula nGQL execute fail. %s", resultSet.getSpaceName(), resultSet.getErrorMessage()));
@@ -66,7 +68,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
         String spaceName = configuration.getDefaultSpace();
         String user = configuration.getUser();
         String password = configuration.getPassword();
-        SessionPoolConfig sessionPoolConfig = new SessionPoolConfig(addresses, spaceName, user, password);
+        SessionPoolConfig sessionPoolConfig = new SessionPoolConfig(addresses, StringUtils.defaultIfBlank(spaceName, SessionPool.NULL_SPACE), user, password);
         sessionPoolConfig.setMinSessionSize(1);
         sessionPoolConfig.setMaxSessionSize(10);
         sessionPoolConfig.setRetryTimes(3);

@@ -21,12 +21,15 @@ public class GraphPanelInteractions {
     private final QueryExecutionService queryExecutionService;
     private final VisualizationApi visualization;
 
+    private final Project project;
+
     public GraphPanelInteractions(GraphConsoleView graphConsoleView,
                                   MessageBus messageBus, VisualizationApi visualization,Project project) {
         this.graphConsoleView = graphConsoleView;
         this.messageBus = messageBus;
         this.visualization = visualization;
         this.queryExecutionService = new QueryExecutionService(project,messageBus);
+        this.project = project;
 
         registerMessageBusSubscribers();
         registerVisualisationEvents();

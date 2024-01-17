@@ -57,7 +57,7 @@
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="GraphdHost"/>
+                  <text value="GraphdHost *"/>
                 </properties>
               </component>
               <component id="8ff6" class="javax.swing.JLabel">
@@ -65,7 +65,7 @@
                   <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="User"/>
+                  <text value="User *"/>
                 </properties>
               </component>
               <component id="43517" class="javax.swing.JLabel">
@@ -73,7 +73,7 @@
                   <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="Password"/>
+                  <text value="Password *"/>
                 </properties>
               </component>
               <component id="1ede7" class="com.intellij.ui.components.JBTextField" binding="hostField">
@@ -121,7 +121,7 @@
                   <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="GraphdPort"/>
+                  <text value="GraphdPort * "/>
                 </properties>
               </component>
               <grid id="d111d" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">

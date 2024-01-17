@@ -12,9 +12,12 @@ import com.intellij.psi.PsiElement;
 import com.intellij.util.messages.MessageBus;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourcesComponent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.context.DataContext;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.ConsoleToolWindow;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.NameUtil;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.Notifier;
 import com.vesoft.jetbrains.plugin.graphdb.platform.GraphConstants;
+import org.apache.commons.lang.StringUtils;
 
 import java.awt.*;
 import java.util.Map;

@@ -10,10 +10,13 @@ import com.vesoft.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.actions.execute.ExecuteQueryPayload;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.analytics.Analytics;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.context.DataContext;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryExecutionProcessEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.console.event.QueryPlanEvent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.util.Notifier;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Future;
@@ -33,13 +36,30 @@ public class QueryExecutionService {
 
     public void executeQuery(DataSourceApi dataSource, ExecuteQueryPayload payload) {
         checkForRunningQuery();
-
         try {
+            checkForNebula(dataSource, payload);
             executeInBackground(dataSource, payload);
         } catch (Exception e) {
             Notifier.error("Query execution", "Error during execution: " + e.toString());
         } finally {
             Analytics.event(dataSource, "executeQuery");
+        }
+    }
+
+    private void checkForNebula(DataSourceApi dataSource, ExecuteQueryPayload payload) {
+        if (dataSource.getDataSourceType() == DataSourceType.NEBULA) {
+            String currentSpace = DataContext.getInstance(project).getCurrentSpace(dataSource);
+            if (StringUtils.isNotBlank(currentSpace)) {
+                return;
+            }
+
+            String sql = payload.getQueries().get(0).trim().toLowerCase();
+            if (!sql.startsWith("use ")
+                    && !sql.startsWith("create space ")
+                    && !sql.startsWith("show ")
+                    && !sql.startsWith("desc ")) {
+                throw new IllegalArgumentException("Please select a nebula space first.");
+            }
         }
     }
 

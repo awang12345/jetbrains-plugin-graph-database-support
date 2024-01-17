@@ -64,9 +64,6 @@ public class NebulaDataSourceDialog extends DataSourceDialog {
         if (!StringUtils.isNumeric(portField.getText())) {
             return validation("Port must be numeric", portField);
         }
-        if (StringUtils.isBlank(defaultSpaceField.getText())) {
-            return validation("Default space must not be empty", defaultSpaceField);
-        }
 
         extractData();
 
