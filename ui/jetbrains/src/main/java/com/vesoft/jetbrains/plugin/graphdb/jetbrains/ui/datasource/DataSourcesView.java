@@ -218,6 +218,9 @@ public class DataSourcesView implements Disposable {
 
     public TreePath[] getExpandedNodes(JTree tree) {
         Enumeration<TreePath> paths = tree.getExpandedDescendants(new TreePath(tree.getModel().getRoot()));
+        if (paths == null) {
+            return null;
+        }
         List<TreePath> expandedPaths = new ArrayList<>();
         while (paths.hasMoreElements()) {
             TreePath path = paths.nextElement();

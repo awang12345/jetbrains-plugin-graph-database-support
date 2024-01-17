@@ -71,7 +71,7 @@ public class SQLConsoleSpaceSelectAction extends ComboBoxAction implements DumbA
             return actionGroup;
         }
         for (NebulaSpace nebulaSpace : nebulaSpaceList) {
-            actionGroup.add(new AnAction(nebulaSpace.getSpaceName()) {
+            actionGroup.add(new AnAction("_"+nebulaSpace.getSpaceName()) {
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e) {
                     switchSpace(e, nebulaSpace.getSpaceName());
