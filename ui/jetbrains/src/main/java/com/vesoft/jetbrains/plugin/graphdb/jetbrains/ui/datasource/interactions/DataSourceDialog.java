@@ -30,6 +30,19 @@ public abstract class DataSourceDialog extends DialogWrapper {
     public static final int THICKNESS = 10;
     public static final int HEIGHT = 150;
 
+    private final ValidationCallback defaultValidationCallback = new ValidationCallback() {
+
+        @Override
+        public void onSuccess(JPanel popupPanel, JComponent contentPanel) {
+            connectionSuccessful(popupPanel, contentPanel);
+        }
+
+        @Override
+        public void onFailure(JPanel popupPanel, JComponent contentPanel, Exception ex) {
+            connectionFailed(ex, popupPanel, contentPanel);
+        }
+    };
+
     protected DataSourceDialog(@Nullable Project project, DataSourcesView dataSourcesView) {
         super(project);
         Disposer.register(project, myDisposable);
@@ -47,8 +60,11 @@ public abstract class DataSourceDialog extends DialogWrapper {
         return showAndGet();
     }
 
-
     public void validationPopup() {
+        validationPopup(defaultValidationCallback);
+    }
+
+    public void validationPopup(ValidationCallback validationCallback) {
         JPanel popupPanel = new JPanel(new BorderLayout());
         popupPanel.setBorder(JBUI.Borders.empty(THICKNESS));
 
@@ -58,8 +74,9 @@ public abstract class DataSourceDialog extends DialogWrapper {
                     GraphIcons.Nodes.PROCESS_FAIL, JLabel.LEFT);
             popupPanel.add(connectionFailed, BorderLayout.CENTER);
             createPopup(popupPanel, getContentPanel());
+            validationCallback.onFailure(popupPanel, getContentPanel(), new Exception(validationInfo.message));
         } else {
-            validateConnection(popupPanel, getContentPanel());
+            validateConnection(popupPanel, getContentPanel(), validationCallback);
         }
     }
 
@@ -79,13 +96,13 @@ public abstract class DataSourceDialog extends DialogWrapper {
 
     private void validateConnection(
             JPanel popupPanel,
-            JComponent contentPanel) {
+            JComponent contentPanel, ValidationCallback validationCallback) {
         ExecutorService executorService = ServiceManager.getService(ExecutorService.class);
         showLoading();
         executorService.runInBackground(
                 this::executeOkQuery,
-                (status) -> connectionSuccessful(popupPanel, contentPanel),
-                (exception) -> connectionFailed(exception, popupPanel, contentPanel),
+                (status) -> validationCallback.onSuccess(popupPanel, contentPanel),
+                (exception) -> validationCallback.onFailure(popupPanel, contentPanel, exception),
                 ModalityState.current()
         );
     }
@@ -114,7 +131,7 @@ public abstract class DataSourceDialog extends DialogWrapper {
             JPanel popupPanel,
             JComponent contentPanel) {
         hideLoading();
-        JLabel connectionSuccessful = new JLabel("Connection successful!",GraphIcons.Nodes.PROCESS_OK , JLabel.LEFT);
+        JLabel connectionSuccessful = new JLabel("Connection successful!", GraphIcons.Nodes.PROCESS_OK, JLabel.LEFT);
         popupPanel.add(connectionSuccessful, BorderLayout.CENTER);
 
         createPopup(popupPanel, contentPanel);
@@ -140,4 +157,26 @@ public abstract class DataSourceDialog extends DialogWrapper {
 
         createPopup(popupPanel, contentPanel);
     }
+
+    @Override
+    protected void doOKAction() {
+        validationPopup(new ValidationCallback() {
+            @Override
+            public void onSuccess(JPanel popupPanel, JComponent contentPanel) {
+                DataSourceDialog.super.doOKAction();
+            }
+
+            @Override
+            public void onFailure(JPanel popupPanel, JComponent contentPanel, Exception ex) {
+                connectionFailed(ex, popupPanel, contentPanel);
+            }
+        });
+    }
+
+    interface ValidationCallback {
+        void onSuccess(JPanel popupPanel, JComponent contentPanel);
+
+        void onFailure(JPanel popupPanel, JComponent contentPanel, Exception ex);
+    }
+
 }

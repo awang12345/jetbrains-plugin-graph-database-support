@@ -17,4 +17,8 @@ public interface GraphDatabaseApi {
     }
 
     GraphMetadata metadata(Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay);
+
+    default void close() {
+    }
+    
 }

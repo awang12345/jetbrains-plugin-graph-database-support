@@ -6,4 +6,7 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.
 public interface DatabaseManagerService {
 
     GraphDatabaseApi getDatabaseFor(DataSourceApi dataSource);
+
+    void updateDatabase(DataSourceApi dataSource);
+
 }

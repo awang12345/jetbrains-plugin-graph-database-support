@@ -5,6 +5,7 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class DataSourceV1 implements DataSourceApi {
 
@@ -45,5 +46,23 @@ public class DataSourceV1 implements DataSourceApi {
     @Override
     public Map<String, String> getConfiguration() {
         return configuration;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DataSourceV1 that = (DataSourceV1) o;
+
+        if (!Objects.equals(uuid, that.uuid)) return false;
+        return dataSourceType == that.dataSourceType;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = uuid != null ? uuid.hashCode() : 0;
+        result = 31 * result + (dataSourceType != null ? dataSourceType.hashCode() : 0);
+        return result;
     }
 }

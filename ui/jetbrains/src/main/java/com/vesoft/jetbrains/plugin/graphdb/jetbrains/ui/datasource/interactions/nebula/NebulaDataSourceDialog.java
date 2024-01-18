@@ -6,7 +6,6 @@ import com.intellij.ui.components.JBPasswordField;
 import com.intellij.ui.components.JBTextField;
 import com.intellij.util.ui.AsyncProcessIcon;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
-import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.NebulaConfiguration;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourcesComponent;
@@ -61,7 +60,7 @@ public class NebulaDataSourceDialog extends DataSourceDialog {
         if (StringUtils.isBlank(hostField.getText())) {
             return validation("Host must not be empty", hostField);
         }
-        if (!StringUtils.isNumeric(portField.getText())) {
+        if (StringUtils.isBlank(portField.getText()) || !StringUtils.isNumeric(portField.getText())) {
             return validation("Port must be numeric", portField);
         }
 
@@ -119,10 +118,12 @@ public class NebulaDataSourceDialog extends DataSourceDialog {
     @NotNull
     @Override
     protected String testQuery(GraphDatabaseApi db) {
-        GraphQueryResult result = db.execute("yield 1");
-        if (result.getRows().isEmpty()) {
-            throw new IllegalStateException("Connect nebula graph fail!!!");
+        String testNGQL = "yield 1";
+        String defaultSpace = defaultSpaceField.getText();
+        if (StringUtils.isNotBlank(defaultSpace)) {
+            testNGQL = "USE " + defaultSpace;
         }
+        db.execute(testNGQL);
         return "ok";
     }
 

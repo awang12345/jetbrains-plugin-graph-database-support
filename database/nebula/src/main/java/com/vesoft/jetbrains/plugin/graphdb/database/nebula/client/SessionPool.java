@@ -459,4 +459,8 @@ public class SessionPool implements Serializable {
 //            throw new IllegalArgumentException("`USE SPACE` alone is forbidden.");
 //        }
     }
+
+    public String getSpaceName() {
+        return NULL_SPACE.equals(spaceName) ? null : spaceName;
+    }
 }

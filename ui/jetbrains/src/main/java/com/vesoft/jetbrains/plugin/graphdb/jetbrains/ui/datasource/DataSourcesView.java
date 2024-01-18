@@ -14,6 +14,8 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.analytics.Analyti
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourcesComponent;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourcesComponentMetadata;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerService;
+import com.vesoft.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerServiceImpl;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.actions.RefreshDataSourcesAction;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.interactions.DataSourceInteractions;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.DataSourceMetadataUi;
@@ -133,23 +135,22 @@ public class DataSourcesView implements Disposable {
         Enumeration children = treeRoot.children();
         while (children.hasMoreElements()) {
             PatchedDefaultMutableTreeNode treeNode = (PatchedDefaultMutableTreeNode) children.nextElement();
-            refreshDataSourceMetadata(treeNode)
-                    .thenAccept((isRefreshed) -> {
-                        if (isRefreshed) {
-                            reloadTreeNode(treeNode);
-                        }
-                    });
+            refreshDataSourceMetadata(treeNode);
             reloadTreeNode(treeNode);
         }
     }
 
-    public CompletableFuture<Boolean> refreshDataSourceMetadata(PatchedDefaultMutableTreeNode treeNode) {
+    public void refreshDataSourceMetadata(PatchedDefaultMutableTreeNode treeNode) {
         TreeNodeModelApi userObject = (TreeNodeModelApi) treeNode.getUserObject();
         DataSourceApi nodeDataSource = userObject.getDataSourceApi();
         Analytics.event(nodeDataSource, "refreshMetadata");
         treeNode.removeAllChildren();
         treeNode.add(new PatchedDefaultMutableTreeNode(new LoadingModel("Loading...", nodeDataSource)));
-        return dataSourceMetadataUi.updateDataSourceMetadataUi(treeNode, nodeDataSource, project);
+        dataSourceMetadataUi.updateDataSourceMetadataUi(treeNode, nodeDataSource, project).thenAccept((isRefreshed) -> {
+            if (isRefreshed) {
+                reloadTreeNode(treeNode);
+            }
+        });
     }
 
     public void createDataSource(DataSourceApi dataSource) {
@@ -158,17 +159,14 @@ public class DataSourcesView implements Disposable {
         TreeNodeModelApi model = new DataSourceTreeNodeModel(dataSource);
         PatchedDefaultMutableTreeNode treeNode = new PatchedDefaultMutableTreeNode(model);
         treeRoot.add(treeNode);
-        refreshDataSourceMetadata(treeNode).thenAccept((isRefreshed) -> {
-            if (isRefreshed) {
-                reloadTreeNode(treeNode);
-            }
-        });
+        refreshDataSourceMetadata(treeNode);
         reloadTreeNode(treeNode);
     }
 
     public void updateDataSource(PatchedDefaultMutableTreeNode treeNode, DataSourceApi oldDataSource, DataSourceApi newDataSource) {
         Analytics.event(newDataSource, "update");
         component.getDataSourceContainer().updateDataSource(oldDataSource, newDataSource);
+        project.getComponent(DatabaseManagerService.class).updateDatabase(newDataSource);
         treeNode.setUserObject(new DataSourceTreeNodeModel(newDataSource));
         refreshDataSourceMetadata(treeNode);
         reloadTreeNode(treeNode);

@@ -12,14 +12,17 @@ import com.vesoft.nebula.ErrorCode;
 import com.vesoft.nebula.client.graph.SessionPoolConfig;
 import com.vesoft.nebula.client.graph.data.HostAddress;
 import com.vesoft.nebula.client.graph.data.ResultSet;
-import com.vesoft.nebula.client.meta.MetaClient;
+import com.vesoft.nebula.client.graph.data.ValueWrapper;
 import com.vesoft.nebula.client.meta.MetaManager;
 import org.apache.commons.lang.StringUtils;
-import org.bouncycastle.util.encoders.Hex;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class NebulaDatabase implements GraphDatabaseApi {
 
@@ -59,7 +62,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
     }
 
     private <T> T executeInSession(Function<SessionPool, T> executor) {
-        return executor.apply(sessionPool);
+        return executor.apply(getSessionPool());
     }
 
     private SessionPool initSessionPool(Map<String, String> config) {
@@ -85,16 +88,23 @@ public class NebulaDatabase implements GraphDatabaseApi {
     public NebulaGraphMetadata metadata(Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay) {
         return executeInSession(sessionPool -> {
             try {
-                Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get all spaces"));
-                ResultSet resultSet = sessionPool.execute(Consts.Stetments.SHOW_SPACE);
-                if (resultSet.getErrorCode() != ErrorCode.SUCCEEDED.getValue()) {
-                    throw new RuntimeException("Nebula nGQL execute fail !" + resultSet.getErrorMessage());
+                final String specialSpace = sessionPool.getSpaceName();
+                List<String> spaceNameList;
+                if (specialSpace == null) {
+                    Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get all spaces"));
+                    ResultSet resultSet = sessionPool.execute(Consts.Stetments.SHOW_SPACE);
+                    if (resultSet.getErrorCode() != ErrorCode.SUCCEEDED.getValue()) {
+                        throw new RuntimeException("Nebula nGQL execute fail !" + resultSet.getErrorMessage());
+                    }
+                    if (resultSet.rowsSize() == 0) {
+                        return new NebulaGraphMetadata(resultSet.getSpaceName(), Collections.emptyList());
+                    }
+                    spaceNameList = IntStream.range(0, resultSet.rowsSize()).mapToObj(i -> valueToString(resultSet.rowValues(i).get(0))).collect(Collectors.toList());
+                } else {
+                    spaceNameList = Arrays.asList(specialSpace);
                 }
-                if (resultSet.rowsSize() == 0) {
-                    return new NebulaGraphMetadata(resultSet.getSpaceName(), Collections.emptyList());
-                }
-                List<NebulaSpace> spaces = querySpaceList(sessionPool, resultSet, progressDetailDisplay, progressPercentageDisplay);
-                return new NebulaGraphMetadata(resultSet.getSpaceName(), spaces);
+                List<NebulaSpace> spaces = querySpaceList(sessionPool, spaceNameList, progressDetailDisplay, progressPercentageDisplay);
+                return new NebulaGraphMetadata(spaceNameList.get(spaceNameList.size() - 1), spaces);
             } catch (RuntimeException e) {
                 throw e;
             } catch (Exception e) {
@@ -103,16 +113,16 @@ public class NebulaDatabase implements GraphDatabaseApi {
         });
     }
 
-    private List<NebulaSpace> querySpaceList(SessionPool sessionPool, ResultSet resultSet, Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay) throws Exception {
+    private List<NebulaSpace> querySpaceList(SessionPool sessionPool, List<String> spaceNameList, Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay) throws Exception {
+
         List<NebulaSpace> spaces = new ArrayList<>();
-        int size = resultSet.rowsSize();
+        int size = spaceNameList.size();
         for (int i = 0; i < size; i++) {
 
             float percent = (float) i / size;
             Optional.ofNullable(progressPercentageDisplay).ifPresent(a -> a.accept(percent));
 
-            ResultSet.Record valueWrappers = resultSet.rowValues(i);
-            String spaceName = valueWrappers.get(0).asString();
+            String spaceName = spaceNameList.get(i);
             String useSpace = String.format(Consts.Stetments.USE_SPACE, spaceName);
             sessionPool.execute(useSpace);
 
@@ -129,6 +139,14 @@ public class NebulaDatabase implements GraphDatabaseApi {
 
         }
         return spaces;
+    }
+
+    private String valueToString(ValueWrapper valueWrapper) {
+        try {
+            return valueWrapper.asString();
+        } catch (UnsupportedEncodingException e) {
+            return new String(valueWrapper.getValue().getSVal(), StandardCharsets.UTF_8);
+        }
     }
 
     private List<NebulaEdge> querySpaceEdgeList(Consumer<String> progressDetailDisplay, String spaceName, SessionPool sessionPool) throws Exception {
@@ -219,4 +237,13 @@ public class NebulaDatabase implements GraphDatabaseApi {
         return new HostAddress(sessionPool.getAddress().getHost(), Integer.parseInt(port));
     }
 
+    private SessionPool getSessionPool() {
+        return Optional.ofNullable(sessionPool).orElseThrow(() -> new IllegalArgumentException("sessionPool is closed"));
+    }
+
+    @Override
+    public void close() {
+        this.sessionPool.close();
+        this.sessionPool = null;
+    }
 }
