@@ -13,6 +13,27 @@
         </p>
 
         <p>
+            <h3>中文</h3
+        </p>
+
+        <p>
+            <b>功能:</b>
+        <ul>
+            <li>支持 Nebula 3.0+ 和 Neo4j 3.4+ 图数据源管理.</li>
+            <li>支持nGQL和Cypher语言编辑框输入查询.</li>
+            <li>支持nGQL和Cypher语言编辑框语法高亮和自动补全.</li>
+            <li>支持关系网数据图展示</li>
+            <li>支持查询结果分页展示</li>
+            <li>Nebula数据源支持双击tag或者edge预览数据</li>
+            <li>Nebula数据源支持右击space、tag、edge查看其DDL</li>
+        </ul>
+        </p>
+
+        <p>
+            <h3>English</h3
+        </p>
+
+        <p>
             <b>Features:</b>
         <ul>
             <li>Manage data sources.</li>
@@ -82,18 +103,10 @@
             - 执行nGQL时IDE可显示查询进度<br/>
             - nGQL编辑框space下拉列表框可显示加载中<br/>
             - 刷新nebula数据源是树形结构显示加载中 <br/>
+            - nebula元数据TreeNode显示spaceId、tagId、edgeId <br/>
             <br/>
             <b>修复BUG:</b><br/>
             - 修复执行INSERT语句时中文乱码问题 <br/>
-            <br/>
-            <b>Improvements:</b><br/>
-            - Double-click the space tree node to select the current space<br/>
-            - Double-click on the tag or edge tree node to preview the data<br/>
-            - The space drop-down list in the SQL edit box displays the current space in real time<br/>
-            <br/>
-            <b>Fix bug:</b><br/>
-            - <a href="https://github.com/nebula-contrib/nebula-console-intellij-plugin/issues/3">Attempting to connect LOG error message</a> <br/>
-            - <a href="https://github.com/nebula-contrib/nebula-console-intellij-plugin/issues/1">Chinese supports garbled characters</a> <br/>
             <br/>
         ]]>
     </change-notes>
