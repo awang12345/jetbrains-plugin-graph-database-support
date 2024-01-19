@@ -14,6 +14,8 @@ import com.vesoft.nebula.client.graph.data.HostAddress;
 import com.vesoft.nebula.client.graph.data.ResultSet;
 import com.vesoft.nebula.client.graph.data.ValueWrapper;
 import com.vesoft.nebula.client.meta.MetaManager;
+import com.vesoft.nebula.meta.SpaceDesc;
+import com.vesoft.nebula.meta.SpaceItem;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -28,7 +30,13 @@ public class NebulaDatabase implements GraphDatabaseApi {
 
     private SessionPool sessionPool;
 
+    /**
+     * 是否显示spaceId、tagId、edgeId
+     */
+    private final boolean isShowMetaId;
+
     public NebulaDatabase(Map<String, String> config) {
+        this.isShowMetaId = config.getOrDefault("isShowMetaId", Boolean.TRUE.toString()).equals(Boolean.TRUE.toString());
         this.sessionPool = initSessionPool(config);
     }
 
@@ -86,12 +94,20 @@ public class NebulaDatabase implements GraphDatabaseApi {
 
     @Override
     public NebulaGraphMetadata metadata(Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay) {
+        final Consumer<String> progressDetailDisplay0 = Optional.ofNullable(progressDetailDisplay).orElse((s) -> {
+        });
+        final Consumer<Float> progressPercentageDisplay0 = Optional.ofNullable(progressPercentageDisplay).orElse((f) -> {
+        });
         return executeInSession(sessionPool -> {
             try {
+                Optional<MetaManager> managerOptional = Optional.empty();
+                if (isShowMetaId) {
+                    managerOptional = Optional.ofNullable(getMetaInfo(progressDetailDisplay0, sessionPool));
+                }
                 final String specialSpace = sessionPool.getSpaceName();
                 List<String> spaceNameList;
                 if (specialSpace == null) {
-                    Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get all spaces"));
+                    progressDetailDisplay0.accept("Fetch all spaces");
                     ResultSet resultSet = sessionPool.execute(Consts.Stetments.SHOW_SPACE);
                     if (resultSet.getErrorCode() != ErrorCode.SUCCEEDED.getValue()) {
                         throw new RuntimeException("Nebula nGQL execute fail !" + resultSet.getErrorMessage());
@@ -103,7 +119,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
                 } else {
                     spaceNameList = Arrays.asList(specialSpace);
                 }
-                List<NebulaSpace> spaces = querySpaceList(sessionPool, spaceNameList, progressDetailDisplay, progressPercentageDisplay);
+                List<NebulaSpace> spaces = querySpaceList(sessionPool, spaceNameList, managerOptional, progressDetailDisplay0, progressPercentageDisplay0);
                 return new NebulaGraphMetadata(spaceNameList.get(spaceNameList.size() - 1), spaces);
             } catch (RuntimeException e) {
                 throw e;
@@ -113,29 +129,36 @@ public class NebulaDatabase implements GraphDatabaseApi {
         });
     }
 
-    private List<NebulaSpace> querySpaceList(SessionPool sessionPool, List<String> spaceNameList, Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay) throws Exception {
+    private List<NebulaSpace> querySpaceList(SessionPool sessionPool, List<String> spaceNameList, Optional<MetaManager> managerOptional, Consumer<String> progressDetailDisplay, Consumer<Float> progressPercentageDisplay) throws Exception {
 
         List<NebulaSpace> spaces = new ArrayList<>();
         int size = spaceNameList.size();
         for (int i = 0; i < size; i++) {
 
             float percent = (float) i / size;
-            Optional.ofNullable(progressPercentageDisplay).ifPresent(a -> a.accept(percent));
+            progressPercentageDisplay.accept(percent);
 
             String spaceName = spaceNameList.get(i);
             String useSpace = String.format(Consts.Stetments.USE_SPACE, spaceName);
             sessionPool.execute(useSpace);
 
-            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get all edge list for space:" + spaceName));
-            List<NebulaEdge> edgeList = querySpaceEdgeList(progressDetailDisplay, spaceName, sessionPool);
+            progressDetailDisplay.accept("Fetch all edge list for space:" + spaceName);
+            List<NebulaEdge> edgeList = querySpaceEdgeList(progressDetailDisplay, spaceName, sessionPool, managerOptional);
 
-            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get all tag list for space:" + spaceName));
-            List<NebulaTag> tagList = querySpaceTagList(progressDetailDisplay, spaceName, sessionPool);
+            progressDetailDisplay.accept("Fetch all tag list for space:" + spaceName);
+            List<NebulaTag> tagList = querySpaceTagList(progressDetailDisplay, spaceName, sessionPool, managerOptional);
 
-            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get ddl for space:" + spaceName));
-            String ddl = getDDL(progressDetailDisplay, sessionPool, String.format(Consts.Stetments.SHOW_CREATE_SPACE, spaceName));
+            progressDetailDisplay.accept("Fetch ddl for space:" + spaceName);
+            String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_SPACE, spaceName));
 
-            spaces.add(new NebulaSpace(spaceName, edgeList, tagList, ddl));
+            NebulaSpace nebulaSpace = new NebulaSpace(spaceName, edgeList, tagList, ddl);
+            managerOptional.ifPresent(metaManager -> {
+                SpaceItem space = metaManager.getSpace(spaceName);
+                nebulaSpace.setId(String.valueOf(space.space_id));
+                SpaceDesc properties = space.getProperties();
+                nebulaSpace.setType(properties.vid_type.getType().name());
+            });
+            spaces.add(nebulaSpace);
 
         }
         return spaces;
@@ -149,7 +172,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
         }
     }
 
-    private List<NebulaEdge> querySpaceEdgeList(Consumer<String> progressDetailDisplay, String spaceName, SessionPool sessionPool) throws Exception {
+    private List<NebulaEdge> querySpaceEdgeList(Consumer<String> progressDetailDisplay, String spaceName, SessionPool sessionPool, Optional<MetaManager> managerOptional) throws Exception {
         String useSpace = String.format(Consts.Stetments.SHOW_EDGES);
         ResultSet resultSet = sessionPool.execute(useSpace);
         List<NebulaEdge> edgeList = new ArrayList<>();
@@ -157,18 +180,25 @@ public class NebulaDatabase implements GraphDatabaseApi {
             ResultSet.Record valueWrappers = resultSet.rowValues(i);
             String edgeName = valueWrappers.get(0).asString();
 
-            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get property for edge:" + edgeName));
-            Map<String, String> prop = getProp(progressDetailDisplay, sessionPool, String.format(Consts.Stetments.DESC_EDGE, edgeName));
+            progressDetailDisplay.accept("Fetch property for edge:" + edgeName);
+            Map<String, String> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_EDGE, edgeName));
 
-            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get ddl for edge:" + edgeName));
-            String ddl = getDDL(progressDetailDisplay, sessionPool, String.format(Consts.Stetments.SHOW_CREATE_EDGE, edgeName));
+            progressDetailDisplay.accept("Fetch ddl for edge:" + edgeName);
+            String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_EDGE, edgeName));
 
-            edgeList.add(new NebulaEdge(spaceName, edgeName, prop, ddl));
+            NebulaEdge edge = new NebulaEdge(spaceName, edgeName, prop, ddl);
+
+            managerOptional.ifPresent(manager -> {
+                int edgeType = manager.getEdgeType(spaceName, edgeName);
+                edge.setId(String.valueOf(edgeType));
+            });
+
+            edgeList.add(edge);
         }
         return edgeList;
     }
 
-    private List<NebulaTag> querySpaceTagList(Consumer<String> progressDetailDisplay, String spaceName, SessionPool sessionPool) throws Exception {
+    private List<NebulaTag> querySpaceTagList(Consumer<String> progressDetailDisplay, String spaceName, SessionPool sessionPool, Optional<MetaManager> managerOptional) throws Exception {
         String useSpace = String.format(Consts.Stetments.SHOW_TAGS);
         ResultSet resultSet = sessionPool.execute(useSpace);
         List<NebulaTag> tagList = new ArrayList<>();
@@ -176,18 +206,25 @@ public class NebulaDatabase implements GraphDatabaseApi {
             ResultSet.Record valueWrappers = resultSet.rowValues(i);
             String tagName = valueWrappers.get(0).asString();
 
-            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get property for tag:" + tagName));
-            Map<String, String> prop = getProp(progressDetailDisplay, sessionPool, String.format(Consts.Stetments.DESC_TAG, tagName));
+            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("Fetch property for tag:" + tagName));
+            Map<String, String> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_TAG, tagName));
 
-            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("get ddl for tag:" + tagName));
-            String ddl = getDDL(progressDetailDisplay, sessionPool, String.format(Consts.Stetments.SHOW_CREATE_TAG, tagName));
+            Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("Fetch ddl for tag:" + tagName));
+            String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_TAG, tagName));
 
-            tagList.add(new NebulaTag(spaceName, tagName, prop, ddl));
+            NebulaTag tag = new NebulaTag(spaceName, tagName, prop, ddl);
+
+            managerOptional.ifPresent(manager -> {
+                int tagId = manager.getTagId(spaceName, tagName);
+                tag.setId(String.valueOf(tagId));
+            });
+
+            tagList.add(tag);
         }
         return tagList;
     }
 
-    private Map<String, String> getProp(Consumer<String> progressDetailDisplay, SessionPool sessionPool, String sql) throws Exception {
+    private Map<String, String> getProp(SessionPool sessionPool, String sql) throws Exception {
         ResultSet resultSet = sessionPool.execute(sql);
         Map<String, String> prop = new HashMap<>();
         for (int i = 0; i < resultSet.rowsSize(); i++) {
@@ -199,7 +236,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
         return prop;
     }
 
-    private String getDDL(Consumer<String> progressDetailDisplay, SessionPool sessionPool, String sql) throws Exception {
+    private String getDDL(SessionPool sessionPool, String sql) throws Exception {
         ResultSet resultSet = sessionPool.execute(sql);
         if (resultSet.rowsSize() == 0) {
             return "[ERROR]Get ddl statement failed from nebula.The query nGQL is " + sql;
@@ -208,8 +245,9 @@ public class NebulaDatabase implements GraphDatabaseApi {
         return valueWrappers.get(1).asString();
     }
 
-    private MetaManager getMetaInfo(SessionPool sessionPool) {
+    private MetaManager getMetaInfo(Consumer<String> progressDetailDisplay, SessionPool sessionPool) {
         try {
+            progressDetailDisplay.accept("Fetch meta server address");
             HostAddress metaAddress = getMetaAddress(sessionPool);
             MetaManager metaManager = new MetaManager(Arrays.asList(metaAddress), 3000, 1, 1, false, null);
             return metaManager;

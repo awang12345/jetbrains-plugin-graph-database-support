@@ -75,15 +75,16 @@
 
     <change-notes>
         <![CDATA[
-            <h3>1.0.2, 2024-01-12</h3><br/>
-            <b>新功能:</b><br/>
-            - 双击DataSource下space树节点可更换SQL编辑框操作的space<br/>
-            - 双击DataSource下tag或者edge树节点可以直接预览数据<br/>
-            - SQL编辑框的space下拉列表框与当前会话space保持一致<br/>
+            <h3>1.0.3, 2024-01-19</h3><br/>
+            <b>优化 (主要针对交互体验)</b><br/>
+            - 增加nebula数据源时可不指定space，如果指定space，则datasource下面也只会显示指定的space<br/>
+            - 增加nebula数据源后IDE可显示meta元数据加载进度<br/>
+            - 执行nGQL时IDE可显示查询进度<br/>
+            - nGQL编辑框space下拉列表框可显示加载中<br/>
+            - 刷新nebula数据源是树形结构显示加载中 <br/>
             <br/>
             <b>修复BUG:</b><br/>
-            - <a href="https://github.com/nebula-contrib/nebula-console-intellij-plugin/issues/3">刷新原数据异常</a> <br/>
-            - <a href="https://github.com/nebula-contrib/nebula-console-intellij-plugin/issues/1">显示查询结果中文乱码</a> <br/>
+            - 修复执行INSERT语句时中文乱码问题 <br/>
             <br/>
             <b>Improvements:</b><br/>
             - Double-click the space tree node to select the current space<br/>

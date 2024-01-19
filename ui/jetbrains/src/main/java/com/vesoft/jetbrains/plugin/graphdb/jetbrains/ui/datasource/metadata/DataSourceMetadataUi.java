@@ -14,6 +14,7 @@ import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metada
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree.*;
 import icons.GraphIcons;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -213,9 +214,14 @@ public class DataSourceMetadataUi {
             return;
         }
         for (NebulaSpace nebulaSpace : nebulaGraphMetadata.getNebulaSpaceList()) {
+
+            String spaceName = StringUtils.isBlank(nebulaSpace.getId()) ? nebulaSpace.getSpaceName()
+                    : String.format("%s (%s %s)", nebulaSpace.getSpaceName(), nebulaSpace.getId(), StringUtils.defaultString(nebulaSpace.getType()));
+
             PatchedDefaultMutableTreeNode spaceTreeNode = new PatchedDefaultMutableTreeNode(
                     new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.SPACE, dataSourceApi,
-                            nebulaSpace.getSpaceName(), GraphIcons.Nodes.NEBULA_SPACE, nebulaSpace));
+                            spaceName, GraphIcons.Nodes.NEBULA_SPACE, nebulaSpace));
+
             addEdgeNode(dataSourceApi, nebulaSpace, spaceTreeNode);
             addTagNode(dataSourceApi, nebulaSpace, spaceTreeNode);
             dataSourceRootTreeNode.add(spaceTreeNode);
@@ -225,9 +231,9 @@ public class DataSourceMetadataUi {
     private static void addEdgeNode(DataSourceApi dataSourceApi, NebulaSpace nebulaSpace, PatchedDefaultMutableTreeNode spaceTreeNode) {
         if (nebulaSpace.getEdgeList() != null && !nebulaSpace.getEdgeList().isEmpty()) {
             for (NebulaEdge nebulaEdge : nebulaSpace.getEdgeList()) {
+                String edgeName = StringUtils.isBlank(nebulaEdge.getId()) ? nebulaEdge.getEdgeName() : String.format("%s (%s)", nebulaEdge.getEdgeName(), nebulaEdge.getId());
                 PatchedDefaultMutableTreeNode edgeTreeNode
-                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.EDGE, dataSourceApi,
-                        nebulaEdge.getEdgeName(), GraphIcons.Nodes.NEBULA_EDGE, nebulaEdge));
+                        = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.EDGE, dataSourceApi, edgeName, GraphIcons.Nodes.NEBULA_EDGE, nebulaEdge));
                 if (nebulaEdge.getProperties() != null && !nebulaEdge.getProperties().isEmpty()) {
                     for (Map.Entry<String, String> entry : nebulaEdge.getProperties().entrySet()) {
                         PatchedDefaultMutableTreeNode propTreeNode = new PatchedDefaultMutableTreeNode(
@@ -244,9 +250,10 @@ public class DataSourceMetadataUi {
     private static void addTagNode(DataSourceApi dataSourceApi, NebulaSpace nebulaSpace, PatchedDefaultMutableTreeNode spaceTreeNode) {
         if (nebulaSpace.getTagList() != null && !nebulaSpace.getTagList().isEmpty()) {
             for (NebulaTag nebulaTag : nebulaSpace.getTagList()) {
+                String tagName = StringUtils.isBlank(nebulaTag.getId()) ? nebulaTag.getTagName() : String.format("%s (%s)", nebulaTag.getTagName(), nebulaTag.getId());
                 PatchedDefaultMutableTreeNode tagTreeNode
                         = new PatchedDefaultMutableTreeNode(new NebulaMetadataTreeNodeModel(NebulaTreeNodeType.TAG, dataSourceApi,
-                        nebulaTag.getTagName(), GraphIcons.Nodes.NEBULA_TAG, nebulaTag));
+                        tagName, GraphIcons.Nodes.NEBULA_TAG, nebulaTag));
                 if (nebulaTag.getProperties() != null && !nebulaTag.getProperties().isEmpty()) {
                     for (Map.Entry<String, String> entry : nebulaTag.getProperties().entrySet()) {
                         PatchedDefaultMutableTreeNode propTreeNode = new PatchedDefaultMutableTreeNode(
