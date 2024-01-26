@@ -3,10 +3,7 @@ package com.vesoft.jetbrains.plugin.graphdb.database.nebula;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.client.SessionPool;
-import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaEdge;
-import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetadata;
-import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
-import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaTag;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.*;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.query.NebulaGraphQueryResult;
 import com.vesoft.nebula.ErrorCode;
 import com.vesoft.nebula.client.graph.SessionPoolConfig;
@@ -16,6 +13,7 @@ import com.vesoft.nebula.client.graph.data.ValueWrapper;
 import com.vesoft.nebula.client.meta.MetaManager;
 import com.vesoft.nebula.meta.SpaceDesc;
 import com.vesoft.nebula.meta.SpaceItem;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -81,7 +79,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
         String password = configuration.getPassword();
         SessionPoolConfig sessionPoolConfig = new SessionPoolConfig(addresses, StringUtils.defaultIfBlank(spaceName, SessionPool.NULL_SPACE), user, password);
         sessionPoolConfig.setMinSessionSize(1);
-        sessionPoolConfig.setMaxSessionSize(10);
+        sessionPoolConfig.setMaxSessionSize(1);
         sessionPoolConfig.setRetryTimes(3);
         sessionPoolConfig.setIntervalTime(1000);
         sessionPoolConfig.setWaitTime(10_000);
@@ -142,6 +140,8 @@ public class NebulaDatabase implements GraphDatabaseApi {
             String useSpace = String.format(Consts.Stetments.USE_SPACE, spaceName);
             sessionPool.execute(useSpace);
 
+            Map<String, Long> spaceStats = getSpaceStats(sessionPool);
+
             progressDetailDisplay.accept("Fetch all edge list for space:" + spaceName);
             List<NebulaEdge> edgeList = querySpaceEdgeList(progressDetailDisplay, spaceName, sessionPool, managerOptional);
 
@@ -158,6 +158,17 @@ public class NebulaDatabase implements GraphDatabaseApi {
                 SpaceDesc properties = space.getProperties();
                 nebulaSpace.setType(properties.vid_type.getType().name());
             });
+
+            if (!spaceStats.isEmpty()) {
+                edgeList.forEach(edge -> edge.setDataCount(spaceStats.get(edge.getEdgeName())));
+                tagList.forEach(tag -> tag.setDataCount(spaceStats.get(tag.getTagName())));
+                Long vertices = spaceStats.get("vertices");
+                Long edges = spaceStats.get("edges");
+                if (vertices != null || edges != null) {
+                    nebulaSpace.setDataCount(Optional.ofNullable(vertices).orElse(0L) + Optional.ofNullable(edges).orElse(0L));
+                }
+            }
+
             spaces.add(nebulaSpace);
 
         }
@@ -181,7 +192,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
             String edgeName = valueWrappers.get(0).asString();
 
             progressDetailDisplay.accept("Fetch property for edge:" + edgeName);
-            Map<String, String> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_EDGE, edgeName));
+            List<NebulaField> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_EDGE, edgeName));
 
             progressDetailDisplay.accept("Fetch ddl for edge:" + edgeName);
             String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_EDGE, edgeName));
@@ -207,7 +218,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
             String tagName = valueWrappers.get(0).asString();
 
             Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("Fetch property for tag:" + tagName));
-            Map<String, String> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_TAG, tagName));
+            List<NebulaField> prop = getProp(sessionPool, String.format(Consts.Stetments.DESC_TAG, tagName));
 
             Optional.ofNullable(progressDetailDisplay).ifPresent(a -> a.accept("Fetch ddl for tag:" + tagName));
             String ddl = getDDL(sessionPool, String.format(Consts.Stetments.SHOW_CREATE_TAG, tagName));
@@ -224,16 +235,40 @@ public class NebulaDatabase implements GraphDatabaseApi {
         return tagList;
     }
 
-    private Map<String, String> getProp(SessionPool sessionPool, String sql) throws Exception {
+    private List<NebulaField> getProp(SessionPool sessionPool, String sql) throws Exception {
         ResultSet resultSet = sessionPool.execute(sql);
-        Map<String, String> prop = new HashMap<>();
+        int fieldIdx = 0;
+        int typeIdx = 1;
+        int commentIdx = 4;
+        List<String> columnNames = resultSet.getColumnNames();
+        for (int i = 0; i < columnNames.size(); i++) {
+            switch (columnNames.get(i).toLowerCase()) {
+                case "field":
+                    fieldIdx = i;
+                    break;
+                case "type":
+                    typeIdx = i;
+                    break;
+                case "comment":
+                    commentIdx = i;
+                    break;
+                default:
+                    break;
+            }
+        }
+        List<NebulaField> fieldList = new ArrayList<>(resultSet.rowsSize());
         for (int i = 0; i < resultSet.rowsSize(); i++) {
             ResultSet.Record valueWrappers = resultSet.rowValues(i);
-            String fieldName = valueWrappers.get(0).asString();
-            String type = valueWrappers.get(1).asString();
-            prop.put(fieldName, type);
+            String fieldName = valueWrappers.get(fieldIdx).asString();
+            String type = valueWrappers.get(typeIdx).asString();
+            String comment = null;
+            ValueWrapper commentValue = valueWrappers.get(commentIdx);
+            if (!commentValue.isEmpty() && !commentValue.isNull()) {
+                comment = commentValue.asString();
+            }
+            fieldList.add(new NebulaField(fieldName, type, comment));
         }
-        return prop;
+        return fieldList;
     }
 
     private String getDDL(SessionPool sessionPool, String sql) throws Exception {
@@ -273,6 +308,36 @@ public class NebulaDatabase implements GraphDatabaseApi {
             return new HostAddress(host, Integer.parseInt(port));
         }
         return new HostAddress(sessionPool.getAddress().getHost(), Integer.parseInt(port));
+    }
+
+    private Map<String, Long> getSpaceStats(SessionPool sessionPool) throws Exception {
+        ResultSet resultSet = sessionPool.execute(Consts.Stetments.SHOW_STATS);
+        if (resultSet.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        int nameIdx = 1;
+        int countIdx = 2;
+        List<String> columnNames = resultSet.getColumnNames();
+        for (int i = 0; i < columnNames.size(); i++) {
+            switch (columnNames.get(i).toLowerCase()) {
+                case "name":
+                    nameIdx = i;
+                    break;
+                case "count":
+                    countIdx = i;
+                    break;
+                default:
+                    break;
+            }
+        }
+        Map<String, Long> spaceStats = new HashMap<>();
+        for (int i = 0; i < resultSet.rowsSize(); i++) {
+            ResultSet.Record valueWrappers = resultSet.rowValues(i);
+            String name = valueWrappers.get(nameIdx).asString();
+            Long count = valueWrappers.get(countIdx).asLong();
+            spaceStats.put(name, count);
+        }
+        return spaceStats;
     }
 
     private SessionPool getSessionPool() {

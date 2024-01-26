@@ -15,6 +15,8 @@ public interface Consts {
         String SHOW_CREATE_TAG = "SHOW CREATE TAG %s";
         String SHOW_CREATE_SPACE = "SHOW CREATE SPACE %s";
 
+        String SHOW_STATS = "SHOW STATS";
+
     }
 
 }

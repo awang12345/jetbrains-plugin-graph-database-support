@@ -6,6 +6,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.project.Project;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaEdge;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaField;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
 import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaTag;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.metadata.DataSourceMetadata;
@@ -109,9 +110,10 @@ public class NGqlCompletionContributor extends CompletionContributor {
                 for (NebulaTag nebulaTag : tagList) {
                     addElement(result, nebulaTag.getTagName(), GraphIcons.Nodes.NEBULA_TAG, "Tag");
 
-                    if (nebulaTag.getProperties() != null) {
-                        for (String prop : nebulaTag.getProperties().keySet()) {
-                            addElement(result, prop, GraphIcons.Nodes.NEBULA_FIELD, "Field");
+                    List<NebulaField> properties = nebulaTag.getProperties();
+                    if (properties != null) {
+                        for (NebulaField prop : properties) {
+                            addElement(result, prop.getName(), GraphIcons.Nodes.NEBULA_FIELD, "Field");
                         }
                     }
                 }
@@ -122,9 +124,10 @@ public class NGqlCompletionContributor extends CompletionContributor {
                 for (NebulaEdge nebulaEdge : edgeList) {
                     addElement(result, nebulaEdge.getEdgeName(), GraphIcons.Nodes.NEBULA_EDGE, "Edge");
 
+                    List<NebulaField> properties = nebulaEdge.getProperties();
                     if (nebulaEdge.getProperties() != null) {
-                        for (String prop : nebulaEdge.getProperties().keySet()) {
-                            addElement(result, prop, GraphIcons.Nodes.NEBULA_FIELD, "Field");
+                        for (NebulaField prop : properties) {
+                            addElement(result, prop.getName(), GraphIcons.Nodes.NEBULA_FIELD, "Field");
                         }
                     }
                 }

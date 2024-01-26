@@ -13,6 +13,20 @@
         </p>
 
         <p>
+            <h3>English</h3
+        </p>
+
+        <p>
+            <b>Features:</b>
+        <ul>
+            <li>Manage data sources.</li>
+            <li>Write and execute queries.</li>
+            <li>Explore query results in graph or table view.</li>
+            <li>Show nebula space,tag,edge,field in tree</li>
+        </ul>
+        </p>
+
+        <p>
             <h3>中文</h3
         </p>
 
@@ -26,20 +40,6 @@
             <li>支持查询结果分页展示</li>
             <li>Nebula数据源支持双击tag或者edge预览数据</li>
             <li>Nebula数据源支持右击space、tag、edge查看其DDL</li>
-        </ul>
-        </p>
-
-        <p>
-            <h3>English</h3
-        </p>
-
-        <p>
-            <b>Features:</b>
-        <ul>
-            <li>Manage data sources.</li>
-            <li>Write and execute queries.</li>
-            <li>Explore query results in graph or table view.</li>
-            <li>Show nebula space,tag,edge,field in tree</li>
         </ul>
         </p>
 

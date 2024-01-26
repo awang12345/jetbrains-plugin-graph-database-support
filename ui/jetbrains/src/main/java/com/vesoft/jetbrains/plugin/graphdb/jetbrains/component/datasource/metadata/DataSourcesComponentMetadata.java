@@ -9,10 +9,7 @@ import com.vesoft.jetbrains.plugin.graphdb.database.api.GraphDatabaseApi;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphMetadata;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResult;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.query.GraphQueryResultColumn;
-import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaEdge;
-import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaGraphMetadata;
-import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaSpace;
-import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaTag;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.*;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.DataSourceType;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.database.DatabaseManagerService;
@@ -253,9 +250,9 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
             if (tagList != null) {
                 tagList.forEach(tag -> {
                     container.addNebulaLabel(tag.getTagName());
-                    Map<String, String> properties = tag.getProperties();
+                    List<NebulaField> properties = tag.getProperties();
                     if (properties != null) {
-                        properties.keySet().forEach(container::addNebulaLabel);
+                        properties.stream().map(NebulaField::getName).forEach(container::addNebulaLabel);
                     }
                 });
             }
@@ -263,9 +260,9 @@ public class DataSourcesComponentMetadata implements ProjectComponent {
             if (edgeList != null) {
                 edgeList.forEach(edge -> {
                     container.addNebulaLabel(edge.getEdgeName());
-                    Map<String, String> properties = edge.getProperties();
+                    List<NebulaField> properties = edge.getProperties();
                     if (properties != null) {
-                        properties.keySet().forEach(container::addNebulaLabel);
+                        properties.stream().map(NebulaField::getName).forEach(container::addNebulaLabel);
                     }
                 });
             }

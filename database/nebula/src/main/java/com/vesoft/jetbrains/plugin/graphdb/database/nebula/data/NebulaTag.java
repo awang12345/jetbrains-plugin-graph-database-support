@@ -1,5 +1,6 @@
 package com.vesoft.jetbrains.plugin.graphdb.database.nebula.data;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,21 +14,21 @@ public class NebulaTag extends NebulaSchema {
 
     private String tagName;
 
-    private Map<String, String> properties;
+    private List<NebulaField> fieldList;
 
 
-    public NebulaTag(String space, String tagName, Map<String, String> properties, String ddl) {
+    public NebulaTag(String space, String tagName, List<NebulaField> fieldList, String ddl) {
         super(space, ddl);
         this.tagName = tagName;
-        this.properties = properties;
+        this.fieldList = fieldList;
     }
 
     public String getTagName() {
         return tagName;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+    public List<NebulaField> getProperties() {
+        return fieldList;
     }
 
 }

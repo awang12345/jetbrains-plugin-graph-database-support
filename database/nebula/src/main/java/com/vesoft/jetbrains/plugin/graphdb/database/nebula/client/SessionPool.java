@@ -18,10 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -52,6 +49,8 @@ public class SessionPool implements Serializable {
     private final String spaceName;
     private final String useSpace;
     public static final String NULL_SPACE = "__NULL_SPACE__";
+
+    private Map<Long, String> sessionIdSpaceMap = new ConcurrentHashMap<>();
 
     public SessionPool(SessionPoolConfig poolConfig) {
         this.sessionPoolConfig = poolConfig;
@@ -148,7 +147,8 @@ public class SessionPool implements Serializable {
                 resultSet = nebulaSession.execute(stmt);
                 if (resultSet.isSucceeded()
                         || resultSet.getErrorCode() == ErrorCode.E_SEMANTIC_ERROR.getValue()
-                        || resultSet.getErrorCode() == ErrorCode.E_SYNTAX_ERROR.getValue()) {
+                        || resultSet.getErrorCode() == ErrorCode.E_SYNTAX_ERROR.getValue()
+                        || resultSet.getErrorCode() == ErrorCode.E_EXECUTION_ERROR.getValue()) {
                     releaseSession(nebulaSession);
                     return resultSet;
                 }
@@ -176,6 +176,16 @@ public class SessionPool implements Serializable {
                     }
                 } else {
                     throw e;
+                }
+            } finally {
+                if (StringUtils.isBlank(resultSet.getSpaceName())) {
+                    //这里防止sql执行异常session清空space
+                    String lastSpaceName = sessionIdSpaceMap.get(nebulaSession.getSessionID());
+                    if (StringUtils.isNotBlank(lastSpaceName)) {
+                        nebulaSession.execute("USE " + lastSpaceName);
+                    }
+                } else {
+                    sessionIdSpaceMap.put(nebulaSession.getSessionID(), resultSet.getSpaceName());
                 }
             }
         }

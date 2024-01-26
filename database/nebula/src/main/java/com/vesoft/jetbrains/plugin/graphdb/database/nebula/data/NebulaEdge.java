@@ -1,5 +1,6 @@
 package com.vesoft.jetbrains.plugin.graphdb.database.nebula.data;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,21 +14,21 @@ public class NebulaEdge extends NebulaSchema {
 
     private String edgeName;
 
-    private Map<String, String> properties;
+    private List<NebulaField> fieldList;
 
 
-    public NebulaEdge(String spaceName, String edgeName, Map<String, String> properties, String ddl) {
+    public NebulaEdge(String spaceName, String edgeName, List<NebulaField> fieldList, String ddl) {
         super(spaceName, ddl);
         this.edgeName = edgeName;
-        this.properties = properties;
+        this.fieldList = fieldList;
     }
 
     public String getEdgeName() {
         return edgeName;
     }
 
-    public Map<String, String> getProperties() {
-        return properties;
+    public List<NebulaField> getProperties() {
+        return fieldList;
     }
 
 }

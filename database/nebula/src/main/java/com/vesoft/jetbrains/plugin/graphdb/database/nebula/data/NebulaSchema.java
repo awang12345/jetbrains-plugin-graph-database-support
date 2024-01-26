@@ -13,6 +13,10 @@ public class NebulaSchema {
 
     private String ddl;
 
+    private String comment;
+
+    private Long dataCount;
+
     public NebulaSchema(String id, String spaceName, String ddl) {
         this.id = id;
         this.spaceName = spaceName;
@@ -38,5 +42,21 @@ public class NebulaSchema {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Long getDataCount() {
+        return dataCount;
+    }
+
+    public void setDataCount(Long dataCount) {
+        this.dataCount = dataCount;
     }
 }
