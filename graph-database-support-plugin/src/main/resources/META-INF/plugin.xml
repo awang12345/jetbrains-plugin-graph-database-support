@@ -96,17 +96,10 @@
 
     <change-notes>
         <![CDATA[
-            <h3>1.0.3, 2024-01-19</h3><br/>
-            <b>优化 (主要针对交互体验)</b><br/>
-            - 增加nebula数据源时可不指定space，如果指定space，则datasource下面也只会显示指定的space<br/>
-            - 增加nebula数据源后IDE可显示meta元数据加载进度<br/>
-            - 执行nGQL时IDE可显示查询进度<br/>
-            - nGQL编辑框space下拉列表框可显示加载中<br/>
-            - 刷新nebula数据源是树形结构显示加载中 <br/>
-            - nebula元数据TreeNode显示spaceId、tagId、edgeId <br/>
-            <br/>
-            <b>修复BUG:</b><br/>
-            - 修复执行INSERT语句时中文乱码问题 <br/>
+            <h3>1.0.4, 2024-01-30</h3><br/>
+            <b>新特性</b><br/>
+            - Nebula元数据支持显示统计数据
+            - Nebula元数据支持显示space、tag、edge的id
             <br/>
         ]]>
     </change-notes>
@@ -229,6 +222,8 @@
         <lang.syntaxHighlighterFactory
                 language="nGQL"
                 implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.ngql.NGqlSyntaxHighlighterFactory"/>
+
+        <lang.commenter language="nGQL" implementationClass="com.vesoft.jetbrains.plugin.graphdb.language.ngql.NGqlCommenter"/>
 
         <completion.contributor
                 language="any"

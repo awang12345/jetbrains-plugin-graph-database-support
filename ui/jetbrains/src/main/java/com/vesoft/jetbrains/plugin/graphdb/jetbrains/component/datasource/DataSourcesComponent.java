@@ -14,12 +14,7 @@ import org.jetbrains.annotations.Nullable;
         storages = {@Storage("GraphDatabaseSupport_DataSourcesState.xml")})
 public class DataSourcesComponent implements ProjectComponent, PersistentStateComponent<DataSourcesComponentState> {
 
-    private final DataSourcesComponentMetadata componentMetadata;
     private DataSourcesComponentState state;
-
-    public DataSourcesComponent(DataSourcesComponentMetadata componentMetadata) {
-        this.componentMetadata = componentMetadata;
-    }
 
     public DataSourceContainer getDataSourceContainer() {
         state.migrate();
@@ -54,7 +49,7 @@ public class DataSourcesComponent implements ProjectComponent, PersistentStateCo
     }
 
     public void refreshAllMetadata() {
-        getDataSourceContainer().getDataSources().forEach(componentMetadata::getMetadata);
+        throw new UnsupportedOperationException("Not implemented method 'refreshAllMetadata'  yet");
     }
 
     /**
