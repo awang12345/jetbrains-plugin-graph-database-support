@@ -94,6 +94,11 @@ public class NebulaGraphRelationship implements GraphRelationship {
     }
 
     @Override
+    public String getRepresentation() {
+        return this.relationship.edgeName();
+    }
+
+    @Override
     public boolean isTypesSingle() {
         return false;
     }

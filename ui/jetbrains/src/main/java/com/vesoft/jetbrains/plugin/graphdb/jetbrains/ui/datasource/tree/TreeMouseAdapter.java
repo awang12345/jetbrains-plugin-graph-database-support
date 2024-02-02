@@ -58,9 +58,9 @@ public class TreeMouseAdapter extends MouseAdapter {
             String space = schema.getSpaceName();
             String nGql = "USE " + space + ";";
             if (schema instanceof NebulaTag) {
-                nGql += String.format("MATCH (v:%s) RETURN v LIMIT 10;", ((NebulaTag) schema).getTagName());
+                nGql += String.format("MATCH (v:%s) RETURN v LIMIT 20;", ((NebulaTag) schema).getTagName());
             } else if (schema instanceof NebulaEdge) {
-                nGql += String.format("MATCH ()-[e:%s]->() RETURN e LIMIT 10;", ((NebulaEdge) schema).getEdgeName());
+                nGql += String.format("MATCH (a)-[e:%s]->(b) RETURN a,b,e LIMIT 20;", ((NebulaEdge) schema).getEdgeName());
             }
             Analytics.event(dataSource, "openEditor");
             try {

@@ -13,17 +13,17 @@ import static prefuse.Constants.EDGE_TYPE_LINE;
 public class RendererProvider {
 
     private static final int TEXT_OVERLAP = 12;
+    private static final int EDGE_TEXT_OVERLAP = 24;
 
     public static LabelRenderer labelRenderer() {
         LabelRenderer labelRenderer = new LabelRenderer(TITLE);
         labelRenderer.setMaxTextWidth(NODE_DIAMETER - TEXT_OVERLAP);
-
         return labelRenderer;
     }
 
     public static LabelRenderer edgeLabelRenderer() {
         LabelRenderer labelRenderer = new LabelRenderer(TITLE);
-        labelRenderer.setMaxTextWidth(NODE_DIAMETER - TEXT_OVERLAP);
+        labelRenderer.setMaxTextWidth(NODE_DIAMETER - EDGE_TEXT_OVERLAP);
 
         return labelRenderer;
     }

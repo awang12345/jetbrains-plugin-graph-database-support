@@ -2,6 +2,7 @@ package com.vesoft.jetbrains.plugin.graphdb.visualization.util;
 
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphEntity;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphNode;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,10 @@ public class DisplayUtil {
             if (valueObj instanceof String) {
                 String key = entry.getKey();
                 String value = (String) valueObj;
+
+                if (StringUtils.isBlank(value)) {
+                    continue;
+                }
 
                 for (String titleIndicator : TITLE_INDICATORS) {
                     if (titleIndicator.equals(key) && filterLength(value)) {

@@ -1,12 +1,18 @@
 package com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.tree;
 
-import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.NebulaSchema;
+import com.intellij.ui.treeStructure.PatchedDefaultMutableTreeNode;
+import com.vesoft.jetbrains.plugin.graphdb.database.nebula.data.*;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.component.datasource.state.DataSourceApi;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.dto.ContextMenu;
 import com.vesoft.jetbrains.plugin.graphdb.jetbrains.ui.datasource.metadata.dto.MetadataContextMenu;
+import icons.GraphIcons;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
 
@@ -16,22 +22,17 @@ public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
     private String value;
     private DataSourceApi dataSourceApi;
 
-    private NebulaSchema schema;
+    private Object data;
 
-    public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value) {
-        this(type, dataSourceApi, value, null, null);
-    }
+    private Optional<String> textAttribute;
 
-    public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value, Icon icon) {
-        this(type, dataSourceApi, value, icon, null);
-    }
-
-    public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value, Icon icon, NebulaSchema schema) {
+    public NebulaMetadataTreeNodeModel(NebulaTreeNodeType type, DataSourceApi dataSourceApi, String value, Icon icon, Object data) {
         this.type = type;
         this.value = value;
         this.dataSourceApi = dataSourceApi;
         this.icon = icon;
-        this.schema = schema;
+        this.data = data;
+        this.textAttribute = Optional.ofNullable(getNodeAttributeText(data));
         prepareContextMenu();
     }
 
@@ -39,8 +40,13 @@ public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
         if (type == NebulaTreeNodeType.SPACE
                 || type == NebulaTreeNodeType.EDGE
                 || type == NebulaTreeNodeType.TAG) {
-            metadataContextMenu = new MetadataContextMenu(type, getDataSourceApi(), value, this.schema);
+            metadataContextMenu = new MetadataContextMenu(type, getDataSourceApi(), value, this.data);
         }
+    }
+
+    @Override
+    public Optional<String> getTextAttribute() {
+        return this.textAttribute;
     }
 
     public Optional<ContextMenu> getContextMenu() {
@@ -85,6 +91,37 @@ public class NebulaMetadataTreeNodeModel implements TreeNodeModelApi {
     }
 
     public NebulaSchema getSchema() {
-        return schema;
+        if (data instanceof NebulaSchema) {
+            return (NebulaSchema) data;
+        }
+        return null;
+    }
+
+    private String getNodeAttributeText(Object node) {
+        if (node instanceof NebulaSpace) {
+            NebulaSpace nebulaSpace = (NebulaSpace) node;
+            String id = StringUtils.isNotBlank(nebulaSpace.getId()) ? "[" + nebulaSpace.getId() + "] " : StringUtils.EMPTY;
+            return String.format("%s%s", id, formatDesc(nebulaSpace.getType(), nebulaSpace.getDataCount(), nebulaSpace.getComment()));
+        }
+        if (node instanceof NebulaTag) {
+            NebulaTag nebulaTag = (NebulaTag) node;
+            String id = StringUtils.isNotBlank(nebulaTag.getId()) ? "[" + nebulaTag.getId() + "] " : StringUtils.EMPTY;
+            return String.format("%s%s", id, formatDesc(nebulaTag.getDataCount(), nebulaTag.getComment()));
+        }
+        if (node instanceof NebulaEdge) {
+            NebulaEdge nebulaEdge = (NebulaEdge) node;
+            String id = StringUtils.isNotBlank(nebulaEdge.getId()) ? "[" + nebulaEdge.getId() + "] " : StringUtils.EMPTY;
+            return String.format("%s%s", id, formatDesc(nebulaEdge.getDataCount(), nebulaEdge.getComment()));
+        }
+        if (node instanceof NebulaField) {
+            NebulaField field = (NebulaField) node;
+            return formatDesc(field.getType(), field.getComment());
+        }
+        return null;
+    }
+
+    private String formatDesc(Object... args) {
+        String desc = Arrays.stream(args).filter(Objects::nonNull).map(String::valueOf).collect(Collectors.joining(","));
+        return StringUtils.isBlank(desc) ? "" : String.format("(%s)", desc);
     }
 }

@@ -23,6 +23,10 @@ public interface TreeNodeModelApi {
         return Optional.empty();
     }
 
+    default Optional<String> getTextAttribute() {
+        return Optional.empty();
+    }
+
     default Optional<String> getDescription() {
         return Optional.empty();
     }

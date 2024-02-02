@@ -43,13 +43,15 @@ public class MetadataActionGroup extends ActionGroup {
         } else if (type == Neo4jTreeNodeType.PROPERTY_KEY) {
             return new AnAction[]{new MetadataPropertyKeyAction(data, dataSourceUuid, "Query this property", "", NEO4J)};
         } else if (type == NebulaTreeNodeType.SPACE) {
-            return new AnAction[]{new ShowNebulaDDLAction((NebulaSchema) extData)};
+            return new AnAction[]{new PreviewNebulaDataAction((NebulaSchema) extData, dataSourceApi),
+                    new ShowNebulaDDLAction((NebulaSchema) extData),
+                    new StatsNebulaAction((NebulaSchema) extData, dataSourceApi)};
         } else if (type == NebulaTreeNodeType.EDGE) {
-            return new AnAction[]{new ShowNebulaDDLAction((NebulaSchema) extData),
-                    new PreviewNebulaDataAction((NebulaSchema) extData, dataSourceApi)};
+            return new AnAction[]{new PreviewNebulaDataAction((NebulaSchema) extData, dataSourceApi),
+                    new ShowNebulaDDLAction((NebulaSchema) extData)};
         } else if (type == NebulaTreeNodeType.TAG) {
-            return new AnAction[]{new ShowNebulaDDLAction((NebulaSchema) extData),
-                    new PreviewNebulaDataAction((NebulaSchema) extData, dataSourceApi)};
+            return new AnAction[]{new PreviewNebulaDataAction((NebulaSchema) extData, dataSourceApi),
+                    new ShowNebulaDDLAction((NebulaSchema) extData)};
         } else {
             return new AnAction[]{};
         }

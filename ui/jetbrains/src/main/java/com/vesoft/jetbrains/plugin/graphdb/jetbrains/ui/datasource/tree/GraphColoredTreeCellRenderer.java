@@ -35,6 +35,7 @@ public class GraphColoredTreeCellRenderer extends ColoredTreeCellRenderer {
             TreeNodeModelApi model = (TreeNodeModelApi) userObject;
             model.getIcon().ifPresent(this::setIcon);
             model.getText().ifPresent(this::append);
+            model.getTextAttribute().ifPresent(attr -> this.append(attr, SimpleTextAttributes.GRAYED_ATTRIBUTES));
         } else if (userObject != null) {
             append(value.toString());
         }

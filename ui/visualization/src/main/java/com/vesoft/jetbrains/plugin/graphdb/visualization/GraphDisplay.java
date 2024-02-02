@@ -73,7 +73,7 @@ public class GraphDisplay extends Display {
         m_vis.setValue(GraphGroups.NODES, null, VisualItem.SHAPE, SHAPE_ELLIPSE);
 
         m_vis.addDecorators(GraphGroups.NODE_LABEL, GraphGroups.NODES, SchemaProvider.provideFontSchema());
-//        m_vis.addDecorators(EDGE_LABEL, EDGES, SchemaProvider.provideFontSchemaWithBackground());
+        m_vis.addDecorators(GraphGroups.EDGE_LABEL, GraphGroups.EDGES, SchemaProvider.provideFontSchemaWithBackground());
 
         m_vis.setRendererFactory(setupRenderer());
 
@@ -123,7 +123,7 @@ public class GraphDisplay extends Display {
 
             Edge edge = graph.addEdge(nodeMap.get(start), nodeMap.get(end));
             edge.set(GraphColumns.ID, graphRelationship.getId());
-            edge.set(GraphColumns.TITLE, graphRelationship.getId());
+            edge.set(GraphColumns.TITLE, graphRelationship.getRepresentation());
             graphRelationshipMap.put(graphRelationship.getId(), graphRelationship);
         }
     }

@@ -18,7 +18,7 @@ public class ShowNebulaDDLAction extends AnAction {
     private NebulaSchema schema;
 
     public ShowNebulaDDLAction(NebulaSchema data) {
-        super("show ddl", "show ddl", GraphIcons.scaleToWidth(GraphIcons.Nodes.DDL, 16));
+        super("Show DDL", "show ddl", GraphIcons.scaleToWidth(GraphIcons.Nodes.DDL, 16));
         this.schema = data;
     }
 

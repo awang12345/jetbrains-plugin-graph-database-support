@@ -84,7 +84,6 @@ public class CustomEdgeRenderer extends EdgeRenderer {
             } else {
                 m_line.setLine(lineX1, lineY1, arrowX, arrowY);
             }
-
             return m_line;
         }
     }

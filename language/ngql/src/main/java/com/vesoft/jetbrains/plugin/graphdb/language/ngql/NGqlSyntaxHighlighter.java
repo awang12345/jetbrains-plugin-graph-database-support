@@ -26,8 +26,8 @@ public class NGqlSyntaxHighlighter extends SyntaxHighlighterBase {
     private TextAttributesKey FUNCTION_D = createTextAttributesKey("SIMPLE_FUNCTION", DefaultLanguageHighlighterColors.FUNCTION_DECLARATION);
     private TextAttributesKey CONSTANT = createTextAttributesKey("SIMPLE_CONSTANT", DefaultLanguageHighlighterColors.CONSTANT);
     private TextAttributesKey COMMENT = createTextAttributesKey("SIMPLE_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
-    private TextAttributesKey BLOCK_COMMENT = createTextAttributesKey("SIMPLE_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
-    private TextAttributesKey DOC_COMMENT = createTextAttributesKey("SIMPLE_COMMENT", DefaultLanguageHighlighterColors.DOC_COMMENT);
+    private TextAttributesKey BLOCK_COMMENT = createTextAttributesKey("SIMPLE_BLOCK_COMMENT", DefaultLanguageHighlighterColors.BLOCK_COMMENT);
+    private TextAttributesKey DOC_COMMENT = createTextAttributesKey("SIMPLE_DOC_COMMENT", DefaultLanguageHighlighterColors.DOC_COMMENT);
     public TextAttributesKey BAD_CHARACTER = createTextAttributesKey("SIMPLE_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
 
     private TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
@@ -67,9 +67,6 @@ public class NGqlSyntaxHighlighter extends SyntaxHighlighterBase {
         }
         if (tokenType == NGqlTypes.COMMENT) {
             return COMMENT_KEYS;
-        }
-        if (tokenType == TokenType.BAD_CHARACTER) {
-            return BAD_CHAR_KEYS;
         }
         return EMPTY_KEYS;
     }
