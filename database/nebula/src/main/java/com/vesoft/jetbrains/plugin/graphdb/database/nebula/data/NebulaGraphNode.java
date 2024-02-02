@@ -37,7 +37,7 @@ public class NebulaGraphNode implements GraphNode {
     }
 
     public NebulaGraphNode(Node node) {
-        this.id = NebulaValueToString.getVidString(node.getId().getValue());
+        this.id = NebulaValueToString.valueToString(node.getId().getValue());
         if (!node.tagNames().isEmpty()) {
             this.name = node.tagNames().get(0);
             try {
@@ -57,7 +57,7 @@ public class NebulaGraphNode implements GraphNode {
     }
 
     public NebulaGraphNode(Vertex vertex) {
-        this.id = NebulaValueToString.getVidString(vertex.getVid());
+        this.id = NebulaValueToString.valueToString(vertex.getVid());
         if (!vertex.getTags().isEmpty()) {
             Tag tag = vertex.getTags().get(0);
             this.name = StringUtils.defaultIfBlank(new String(tag.getName()), this.id);

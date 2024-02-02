@@ -77,8 +77,8 @@ public class NebulaGraphQueryResultRow implements GraphQueryResultRow {
     private static void addNode(List<GraphNode> graphNodeList, ValueWrapper value) {
         if (value.isEdge()) {
             Relationship relationship = value.asRelationship();
-            graphNodeList.add(new NebulaGraphNode(NebulaValueToString.getVidString(relationship.srcId().getValue())));
-            graphNodeList.add(new NebulaGraphNode(NebulaValueToString.getVidString(relationship.dstId().getValue())));
+            graphNodeList.add(new NebulaGraphNode(NebulaValueToString.valueToString(relationship.srcId().getValue())));
+            graphNodeList.add(new NebulaGraphNode(NebulaValueToString.valueToString(relationship.dstId().getValue())));
         } else if (value.isPath()) {
             try {
                 List<Node> nodes = value.asPath().getNodes();

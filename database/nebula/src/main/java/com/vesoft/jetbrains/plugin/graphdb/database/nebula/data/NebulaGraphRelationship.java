@@ -69,12 +69,12 @@ public class NebulaGraphRelationship implements GraphRelationship {
 
     @Override
     public String getStartNodeId() {
-        return String.valueOf(this.relationship.srcId().getValue().getFieldValue());
+        return NebulaValueToString.valueToString(this.relationship.srcId().getValue());
     }
 
     @Override
     public String getEndNodeId() {
-        return String.valueOf(this.relationship.dstId().getValue().getFieldValue());
+        return NebulaValueToString.valueToString(this.relationship.dstId().getValue());
     }
 
     @Override
