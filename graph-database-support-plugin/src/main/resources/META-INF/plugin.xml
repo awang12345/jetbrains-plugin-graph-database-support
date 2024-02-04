@@ -96,10 +96,9 @@
 
     <change-notes>
         <![CDATA[
-            <h3>1.0.4, 2024-01-30</h3><br/>
-            <b>新特性</b><br/>
-            - Nebula元数据支持显示统计数据
-            - Nebula元数据支持显示space、tag、edge的id
+            <h3>1.0.5, 2024-02-04</h3><br/>
+            <b>BUG修复</b><br/>
+            - 修复顶点为String类型的图显示不了的问题
             <br/>
         ]]>
     </change-notes>

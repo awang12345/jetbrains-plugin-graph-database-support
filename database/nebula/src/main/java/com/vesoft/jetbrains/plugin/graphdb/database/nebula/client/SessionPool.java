@@ -178,14 +178,16 @@ public class SessionPool implements Serializable {
                     throw e;
                 }
             } finally {
-                if (StringUtils.isBlank(resultSet.getSpaceName())) {
-                    //这里防止sql执行异常session清空space
-                    String lastSpaceName = sessionIdSpaceMap.get(nebulaSession.getSessionID());
-                    if (StringUtils.isNotBlank(lastSpaceName)) {
-                        nebulaSession.execute("USE " + lastSpaceName);
+                if (resultSet != null) {
+                    if (StringUtils.isBlank(resultSet.getSpaceName())) {
+                        //这里防止sql执行异常session清空space
+                        String lastSpaceName = sessionIdSpaceMap.get(nebulaSession.getSessionID());
+                        if (StringUtils.isNotBlank(lastSpaceName)) {
+                            nebulaSession.execute("USE " + lastSpaceName);
+                        }
+                    } else {
+                        sessionIdSpaceMap.put(nebulaSession.getSessionID(), resultSet.getSpaceName());
                     }
-                } else {
-                    sessionIdSpaceMap.put(nebulaSession.getSessionID(), resultSet.getSpaceName());
                 }
             }
         }

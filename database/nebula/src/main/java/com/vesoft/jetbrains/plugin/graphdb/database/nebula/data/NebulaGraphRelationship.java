@@ -33,7 +33,7 @@ public class NebulaGraphRelationship implements GraphRelationship {
 
     @Override
     public String getId() {
-        return getStartNodeId() + "#" + getEndNodeId();
+        return getStartNodeId() + "->" + getEndNodeId() + "@" + this.relationship.ranking();
     }
 
     @Override

@@ -17,14 +17,12 @@ public class RendererProvider {
 
     public static LabelRenderer labelRenderer() {
         LabelRenderer labelRenderer = new LabelRenderer(TITLE);
-        labelRenderer.setMaxTextWidth(NODE_DIAMETER - TEXT_OVERLAP);
+        labelRenderer.setMaxTextWidth(NODE_DIAMETER);
         return labelRenderer;
     }
 
     public static LabelRenderer edgeLabelRenderer() {
         LabelRenderer labelRenderer = new LabelRenderer(TITLE);
-        labelRenderer.setMaxTextWidth(NODE_DIAMETER - EDGE_TEXT_OVERLAP);
-
         return labelRenderer;
     }
 

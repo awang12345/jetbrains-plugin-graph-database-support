@@ -34,7 +34,7 @@ public class NebulaDatabase implements GraphDatabaseApi {
     private final boolean isShowMetaId;
 
     public NebulaDatabase(Map<String, String> config) {
-        this.isShowMetaId = config.getOrDefault("isShowMetaId", Boolean.TRUE.toString()).equals(Boolean.TRUE.toString());
+        this.isShowMetaId = config.getOrDefault("isShowMetaId", Boolean.FALSE.toString()).equals(Boolean.TRUE.toString());
         this.sessionPool = initSessionPool(config);
     }
 

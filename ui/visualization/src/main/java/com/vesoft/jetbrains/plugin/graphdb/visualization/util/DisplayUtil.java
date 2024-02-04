@@ -3,6 +3,7 @@ package com.vesoft.jetbrains.plugin.graphdb.visualization.util;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphEntity;
 import com.vesoft.jetbrains.plugin.graphdb.database.api.data.GraphNode;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class DisplayUtil {
     private static final int MAX_TITLE_LENGTH = 40;
     private static final int MAX_TEXT_LENGTH = 60;
 
-    private static final List<String> TITLE_INDICATORS = unmodifiableList(newArrayList("name", "title"));
+    private static final List<String> TITLE_INDICATORS = unmodifiableList(newArrayList("name", "title", "mobile", "ip", "address"));
     private static final Predicate<Map.Entry<String, Object>> IS_STRING_VALUE = o -> String.class.isAssignableFrom(o.getValue().getClass());
 
     public static String getProperty(GraphNode node) {
@@ -54,7 +55,14 @@ public class DisplayUtil {
             }
         }
 
-        return fuzzyMatch.orElse(backup.orElse(node.getId()));
+        if (fuzzyMatch.isPresent()) {
+            return fuzzyMatch.get();
+        }
+        String id = node.getId();
+        if (NumberUtils.isNumber(id) && backup.isPresent()) {
+            return backup.get();
+        }
+        return id;
     }
 
     public static String getType(GraphNode node) {
